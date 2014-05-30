@@ -10,6 +10,8 @@
         return;
     }
 
+    var vendor = env.xtag;
+
     var fox = env.fox = function() {
         return fox.fn && fox.fn.apply(this, arguments);
     };
@@ -61,9 +63,7 @@
     fox.fn = function() {
         // extends xtag here
 
-        return env.xtag.apply( env, arguments );
+        return vendor.register.apply( vendor, arguments );
     };
-
-
 
 })(this);
