@@ -3,8 +3,8 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 <metadata>Copyright (C) 2014 by original authors @ fontello.com</metadata>
 <defs>
-<font id="ratchicons" horiz-adv-x="1000" >
-<font-face font-family="ratchicons" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<font id="foxicons" horiz-adv-x="1000" >
+<font-face font-family="foxicons" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
 <missing-glyph horiz-adv-x="1000" />
 <glyph glyph-name="and-caret" unicode="&#xe800;" d="m313 225l375 0v376" horiz-adv-x="1000" />
 <glyph glyph-name="up-nav" unicode="&#xe81f;" d="m65 146l81-83l354 372l353-372l81 83l-434 456l-435-456z" horiz-adv-x="1000" />

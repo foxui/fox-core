@@ -37,13 +37,15 @@
     "grunt-contrib-sass": "~0.7.3",
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-qunit": "~0.4.0",
     "grunt-csscomb": "~2.0.1",
     "grunt-html-validation": "~0.1.17",
     "grunt-jekyll": "~0.4.2",
     "grunt-jscs-checker": "~0.4.4",
     "grunt-sed": "~0.1.1",
     "load-grunt-tasks": "~0.4.0",
-    "time-grunt": "~0.3.1"
+    "time-grunt": "~0.3.1",
+    "qunitjs": "~1.14.0"
   },
   "engines": {
     "node": "~0.10.1"

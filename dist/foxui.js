@@ -2630,30 +2630,40 @@ for (z in UIEventProto){
 })();
 
 /**
- * @fileoverview fox命名空间以及帮助方法
+ * @fileoverview fox命名空间
  */
 
 (function( env ) {
-
-    var undefined;
 
     if (env.fox) {
         return;
     }
 
+    var vendor = env.xtag;
+
     var fox = env.fox = function() {
         return fox.fn && fox.fn.apply(this, arguments);
     };
 
-    fox.debug = true;
+    fox.fn = function(tagName, options, parent) {
+        /* extends xtag here */
+        options = options || {};
 
-    fox.log = function(msg, type) {
-        if (!fox.debug) {
-            return;
-        }
+        // extend from parent including prototype and constructor
+        parent && fox.fn.extendTag(tagName, options, parent);
 
-        console.log(msg);
+
+        return vendor.register(tagName, options);
     };
+
+})(this);
+
+(function( env ) {
+
+    var undefined;
+
+    var fox = env.fox;
+    var vendor = env.xtag;
 
     fox.mixin = function(target, source) {
         for (var key in source) {
@@ -2666,8 +2676,12 @@ for (z in UIEventProto){
     };
 
 
-    fox.find = function(selector, context) {
-        return (context || document).querySelectorAll(selector);
+    fox.query = function(el, selector) {
+        return vendor.query(el, selector);
+    }
+
+    fox.queryChildren = function(el, selector) {
+        return vendor.queryChildren(el, selector);
     }
 
     fox.bind = function(fn, context) {
@@ -2681,20 +2695,68 @@ for (z in UIEventProto){
         };
     }
 
+    fox.fireEvent = function(el, type, data) {
+        return vendor.fireEvent(el, type, data);
+    }
+
     fox.addEvent = function(el, event, callback) {
-        return el.addEventListener(event, callback, false);
+        return vendor.addEvent(el, event, callback);
+    }
+
+    fox.addEvents = function(el, events) {
+        return vendor.addEvents(el, events);
     }
 
     fox.toArray = function(arrayLikeObject) {
         return Array.prototype.slice.call(arrayLikeObject);
     }
 
-    fox.fn = function() {
-        // extends xtag here
+})(this);
 
-        return env.xtag.apply( env, arguments );
+(function( env ) {
+
+    var fox = env.fox;
+
+    fox.debug = true;
+
+    fox.log = function(msg, type) {
+        if (!fox.debug || !('console' in env)) {
+            return;
+        }
+
+        console.log(msg);
     };
 
+})(this);
 
+(function( env ) {
+
+    var undefined;
+
+    var fox = env.fox;
+
+    fox.fn.extendTag = function (tagName, options, parent) {
+        var originCreated;
+        var lifecycle = options.lifecycle || (options.lifecycle = {});
+        var parentInst = document.createElement(parent);
+        var proto = parentInst.__proto__ || Object.getPrototypeOf(parentInst);
+
+        // change prototype
+        options.prototype = proto;
+
+        if (lifecycle.created) {
+            originCreated = lifecycle.created;
+        }
+
+        options.lifecycle.created = function() {
+            //take parent's created callback as constructor
+            proto.createdCallback.apply(this, arguments);
+
+            // $super
+            this.$super = proto;
+
+            originCreated && originCreated.apply(this, arguments);
+        }
+    };
 
 })(this);

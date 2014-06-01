@@ -1,30 +1,9 @@
-/**
- * @fileoverview fox命名空间以及帮助方法
- */
-
 (function( env ) {
 
     var undefined;
 
-    if (env.fox) {
-        return;
-    }
-
+    var fox = env.fox;
     var vendor = env.xtag;
-
-    var fox = env.fox = function() {
-        return fox.fn && fox.fn.apply(this, arguments);
-    };
-
-    fox.debug = true;
-
-    fox.log = function(msg, type) {
-        if (!fox.debug) {
-            return;
-        }
-
-        console.log(msg);
-    };
 
     fox.mixin = function(target, source) {
         for (var key in source) {
@@ -37,8 +16,12 @@
     };
 
 
-    fox.find = function(selector, context) {
-        return (context || document).querySelectorAll(selector);
+    fox.query = function(el, selector) {
+        return vendor.query(el, selector);
+    }
+
+    fox.queryChildren = function(el, selector) {
+        return vendor.queryChildren(el, selector);
     }
 
     fox.bind = function(fn, context) {
@@ -52,18 +35,20 @@
         };
     }
 
+    fox.fireEvent = function(el, type, data) {
+        return vendor.fireEvent(el, type, data);
+    }
+
     fox.addEvent = function(el, event, callback) {
-        return el.addEventListener(event, callback, false);
+        return vendor.addEvent(el, event, callback);
+    }
+
+    fox.addEvents = function(el, events) {
+        return vendor.addEvents(el, events);
     }
 
     fox.toArray = function(arrayLikeObject) {
         return Array.prototype.slice.call(arrayLikeObject);
     }
-
-    fox.fn = function() {
-        // extends xtag here
-
-        return vendor.register.apply( vendor, arguments );
-    };
 
 })(this);

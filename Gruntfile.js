@@ -40,7 +40,10 @@ module.exports = function(grunt) {
         },
         src: [
           'lib/x-tag-core.js',
-          'src/core.js'
+          'src/root.js',
+          'src/utils.js',
+          'src/log.js',
+          'src/extend.js',
         ],
         dest: '<%= meta.distPath %><%= pkg.name %>.js'
       }
@@ -144,6 +147,10 @@ module.exports = function(grunt) {
         '<%= meta.distPath %>/css/<%= pkg.name %>-theme-android.css',
         '<%= meta.distPath %>/css/<%= pkg.name %>-theme-ios.css'
       ]
+    },
+
+    qunit: {
+      files: ['test/test.html']
     }
   });
 
@@ -157,6 +164,6 @@ module.exports = function(grunt) {
   grunt.registerTask('dist', ['clean', 'dist-css', 'dist-js', 'copy']);
   grunt.registerTask('build', ['dist']);
   grunt.registerTask('default', ['dist']);
-  grunt.registerTask('test', ['dist', 'csslint', 'jshint', 'jscs']);
+  grunt.registerTask('test', ['dist', /*'csslint', 'jshint', 'jscs',*/ 'qunit']);
 
 };
