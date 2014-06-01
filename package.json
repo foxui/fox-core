@@ -13,8 +13,6 @@
   ],
   "homepage": "https://github.com/foxui",
   "author": "fex-team",
-  "style": "dist/css/foxui.css",
-  "sass": "sass/foxui.scss",
   "repository": {
     "type": "git",
     "url": "https://github.com/foxui/fox-core.git"
