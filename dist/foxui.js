@@ -5605,7 +5605,7 @@ for (z in UIEventProto){
 (function(env) {
 
 	var undefined;
-	
+
 	var fox = env.fox;
 
 	function getTplAndAttribute(el) {
@@ -5618,14 +5618,15 @@ for (z in UIEventProto){
 		if (elTmpl) {
 			obj['tmpl'] = elTmpl;
 		}
-		
+
 		obj['extends'] =  el.getAttribute('extends')?el.getAttribute('extends'):null;
-		
+
 		var attributes = el.getAttribute('attributes');
 		obj['attributes'] = attributes && attributes.split(' ') || [];
 		return obj;
 	}
 
+    // TODO: 目前只解析以 <link rel="import"/> 方式载入的标签定义，需要增加对于 inline 以及 innerHTML 的解析
 	function getOwnTplAndAttribute(elementName) {
 		var links = document.querySelectorAll('link[rel="import"]');
 		var foxuiEl;
@@ -5647,9 +5648,9 @@ for (z in UIEventProto){
 		return result;
 
 	}
-	
+
 	var registerArr = [];
-	
+
 	function register(elementName, option) {
 
 		if (registerArr.indexOf(elementName) == -1) {
@@ -5663,9 +5664,9 @@ for (z in UIEventProto){
 
 
 		var own = getOwnTplAndAttribute(elementName);
-		
+
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
-		
+
 		$.extend({
 			lifecycle : {
 				created : function() {
@@ -5687,7 +5688,7 @@ for (z in UIEventProto){
 
 		option.accessors = option.accessors || {};
 
-		
+
 		own['attributes'].forEach(function(v) {
 			option.accessors[v] = {
 				attribute : true
@@ -5701,22 +5702,11 @@ for (z in UIEventProto){
 				created : function() {
 					var self = this;
 
-					own['attributes'].forEach(function(v) {
-						var value = self.getAttribute(v);
-						if (value) {
-							if (value == 'false') {
-								value = false;
-							} else if (value == 'true') {
-								value = true;
-							}
-							self[v] = value;
-						}
-					});
 					if(own['tmpl']){
 						$("content", own['tmpl']).replaceWith($(this).children().clone(true));
 						$(this).empty();
 						var clone = document.importNode(own['tmpl'], true);
-	
+
 						this['rivets'] = rivets.bind(clone, this);
 						var _$ = {};
 						$('[id]', clone).each(function() {
@@ -5725,25 +5715,26 @@ for (z in UIEventProto){
 						this.$ = _$;
 						$(this).append(clone);
 					}
-					
 
-					option.lifecycle.created && option.lifecycle.created.apply(this, arguments);
+
+					option.lifecycle && option.lifecycle.created && option.lifecycle.created.apply(this, arguments);
 
 				},
 				inserted : function() {
-					option.lifecycle.inserted && option.lifecycle.inserted.apply(this, arguments);
+					option.lifecycle && option.lifecycle.inserted && option.lifecycle.inserted.apply(this, arguments);
 				},
 				removed : function() {
-					option.lifecycle.removed && option.lifecycle.removed.apply(this, arguments);
+					option.lifecycle && option.lifecycle.removed && option.lifecycle.removed.apply(this, arguments);
 				},
 				attributeChanged : function() {
 
-					option.lifecycle.attributeChanged && option.lifecycle.attributeChanged.apply(this, arguments);
+					option.lifecycle && option.lifecycle.attributeChanged && option.lifecycle.attributeChanged.apply(this, arguments);
 				}
 			},
 			events : option.events,
 			accessors : option.accessors,
-			methods : option.methods
+			methods : option.methods,
+            prototype: option.prototype
 		});
 	}
 

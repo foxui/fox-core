@@ -98,17 +98,6 @@
 				created : function() {
 					var self = this;
 
-					own['attributes'].forEach(function(v) {
-						var value = self.getAttribute(v);
-						if (value) {
-							if (value == 'false') {
-								value = false;
-							} else if (value == 'true') {
-								value = true;
-							}
-							self[v] = value;
-						}
-					});
 					if(own['tmpl']){
 						$("content", own['tmpl']).replaceWith($(this).children().clone(true));
 						$(this).empty();
@@ -124,23 +113,24 @@
 					}
 
 
-					option.lifecycle.created && option.lifecycle.created.apply(this, arguments);
+					option.lifecycle && option.lifecycle.created && option.lifecycle.created.apply(this, arguments);
 
 				},
 				inserted : function() {
-					option.lifecycle.inserted && option.lifecycle.inserted.apply(this, arguments);
+					option.lifecycle && option.lifecycle.inserted && option.lifecycle.inserted.apply(this, arguments);
 				},
 				removed : function() {
-					option.lifecycle.removed && option.lifecycle.removed.apply(this, arguments);
+					option.lifecycle && option.lifecycle.removed && option.lifecycle.removed.apply(this, arguments);
 				},
 				attributeChanged : function() {
 
-					option.lifecycle.attributeChanged && option.lifecycle.attributeChanged.apply(this, arguments);
+					option.lifecycle && option.lifecycle.attributeChanged && option.lifecycle.attributeChanged.apply(this, arguments);
 				}
 			},
 			events : option.events,
 			accessors : option.accessors,
-			methods : option.methods
+			methods : option.methods,
+            prototype: option.prototype
 		});
 	}
 
