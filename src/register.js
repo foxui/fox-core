@@ -1,7 +1,7 @@
 (function(env) {
 
 	var undefined;
-	
+
 	var fox = env.fox;
 
 	function getTplAndAttribute(el) {
@@ -14,14 +14,15 @@
 		if (elTmpl) {
 			obj['tmpl'] = elTmpl;
 		}
-		
+
 		obj['extends'] =  el.getAttribute('extends')?el.getAttribute('extends'):null;
-		
+
 		var attributes = el.getAttribute('attributes');
 		obj['attributes'] = attributes && attributes.split(' ') || [];
 		return obj;
 	}
 
+    // TODO: 目前只解析以 <link rel="import"/> 方式载入的标签定义，需要增加对于 inline 以及 innerHTML 的解析
 	function getOwnTplAndAttribute(elementName) {
 		var links = document.querySelectorAll('link[rel="import"]');
 		var foxuiEl;
@@ -43,9 +44,9 @@
 		return result;
 
 	}
-	
+
 	var registerArr = [];
-	
+
 	function register(elementName, option) {
 
 		if (registerArr.indexOf(elementName) == -1) {
@@ -59,9 +60,9 @@
 
 
 		var own = getOwnTplAndAttribute(elementName);
-		
+
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
-		
+
 		$.extend({
 			lifecycle : {
 				created : function() {
@@ -83,7 +84,7 @@
 
 		option.accessors = option.accessors || {};
 
-		
+
 		own['attributes'].forEach(function(v) {
 			option.accessors[v] = {
 				attribute : true
@@ -112,7 +113,7 @@
 						$("content", own['tmpl']).replaceWith($(this).children().clone(true));
 						$(this).empty();
 						var clone = document.importNode(own['tmpl'], true);
-	
+
 						this['rivets'] = rivets.bind(clone, this);
 						var _$ = {};
 						$('[id]', clone).each(function() {
@@ -121,7 +122,7 @@
 						this.$ = _$;
 						$(this).append(clone);
 					}
-					
+
 
 					option.lifecycle.created && option.lifecycle.created.apply(this, arguments);
 
