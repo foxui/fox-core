@@ -39,11 +39,15 @@ module.exports = function(grunt) {
           banner: '<%= banner %>'
         },
         src: [
+          'lib/zepto.js',
+          'lib/rivets.js',
+          'lib/HTMLImports.js',
           'lib/x-tag-core.js',
           'src/root.js',
           'src/utils.js',
           'src/log.js',
           'src/extend.js',
+          'src/register.js'
         ],
         dest: '<%= meta.distPath %><%= pkg.name %>.js'
       }
