@@ -1,172 +1,202 @@
-var qf = document.getElementById('qunit-fixture');
+document.addEventListener('HTMLImportsLoaded', function() {
+    var qf = document.getElementById('qunit-fixture');
 
+    module('::init::');
 
-module('Element Inheritance');
+    asyncTest( 'init via innerHTML', function() {
 
-asyncTest( 'Base extends', function() {
+        expect( 1 );
 
-    expect( 2 );
+        qf.innerHTML = '<fx-foo foo=1></fx-foo><fx-blank></fx-blank>';
 
+        ok(qf.firstChild.foo === '1');
 
-    fox('w-extend1',{
+        start();
 
-        lifecycle: {
-            created: function() {
-                this.name = 'w-extend1';
-            }
-        },
-
-        accessors: {
-            name: {
-              attribute: true
-            }
-        },
-
-        methods: {
-            hi: function() {
-                return 'w-extend1';
-            }
-        }
     });
 
-    fox('w-extend2', null, 'w-extend1');
+    asyncTest( 'init via createElement', function() {
 
-    qf.innerHTML = '<w-extend2></w-extend2>';
+        expect( 1 );
 
-    ok(qf.firstChild.hi() == 'w-extend1');
-    ok(qf.firstChild.name == 'w-extend1');
+        var foo = document.createElement('fx-foo');
+        foo.foo = '1';
 
-    start();
-});
+        ok(foo.hasAttribute('foo'));
 
-asyncTest( 'Overwrite property', function() {
+        start();
 
-    expect( 1 );
-
-
-    fox('w-extend3',{
-
-        lifecycle: {
-            created: function() {
-                this.name = 'w-extend3';
-            }
-        }
     });
 
-    fox('w-extend4', {
-        lifecycle: {
-            created: function() {
-                this.name = 'w-extend4';
-            }
-        }
-    }, 'w-extend3');
+    module('::attributes::');
 
-    qf.innerHTML = '<w-extend4></w-extend4>';
+    asyncTest( 'asign value via attribute', function() {
 
-    ok(qf.firstChild.name == 'w-extend4');
+        expect( 2 );
 
-    start();
-});
+        // fx-foo's attributes:foo boolfoo
+        qf.innerHTML = '<fx-foo foo=1 non=2></fx-foo>';
 
-asyncTest( 'Overwrite method', function() {
+        // property can only be visited when defined in attributes
+        ok(qf.firstChild.foo === '1');
+        ok(qf.firstChild.non === undefined);
 
-    expect( 1 );
+        start();
 
-
-    fox('w-extend5',{
-
-        lifecycle: {
-            created: function() {
-                this.name = 'w-extend5';
-            }
-        },
-
-        methods: {
-            hi: function() {
-                return 'hello ' + this.name ;
-            }
-        }
     });
 
-    fox('w-extend6', {
-        lifecycle: {
-            created: function() {
-                this.name = 'w-extend6';
-            }
-        },
+    asyncTest( 'change attribute value via property', function() {
 
-        methods: {
-            hi: function() {
-                return 'bye ' + this.name ;
-            }
-        }
-    }, 'w-extend5');
+        expect( 2 );
 
-    qf.innerHTML = '<w-extend6></w-extend6>';
+        qf.innerHTML = '<fx-foo foo=1></fx-foo>';
 
-    ok(qf.firstChild.hi() == 'bye w-extend6');
+        //change property
+        qf.firstChild.foo = 2;
+        qf.firstChild.non = 2;
 
-    start();
-});
+        ok(qf.firstChild.getAttribute('foo') === '2');
+        ok(!qf.firstChild.hasAttribute('non'));
 
-asyncTest( 'Independency of property', function() {
+        start();
 
-    expect( 4 );
-
-
-    fox('w-extend7', {
-        lifecycle: {
-            created: function() {
-                this.data = {
-                    name: 'miller'
-                };
-            }
-        }
     });
 
-    fox('w-extend8', null, 'w-extend7');
+    asyncTest( 'boolean attribute', function() {
 
-    qf.innerHTML = '<w-extend7></w-extend7><w-extend8></w-extend8>';
+        expect( 2 );
 
-    ok(qf.firstChild.data.name == 'miller');
-    ok(qf.firstChild.data.name == qf.lastChild.data.name);
+        qf.innerHTML = '<fx-foo boolfoo></fx-foo><fx-foo></fx-foo>';
 
-    qf.firstChild.data.name = 'lucy';
+        ok(qf.firstChild.boolfoo === true);
+        ok(qf.lastChild.boolfoo === false);
 
-    ok(qf.firstChild.data.name == 'lucy');
-    ok(qf.lastChild.data.name == 'miller');
+        start();
 
-    start();
-});
-
-asyncTest( 'Invoke super prototype', function() {
-
-    expect( 1 );
-
-
-    fox('w-extend9', {
-        methods: {
-            calc: function(a, b) {
-                this.value = a + b;
-            }
-        }
     });
 
-    fox('w-extend10', {
-        methods: {
-            calc: function(a, b) {
-                this.$super.calc.apply(this, arguments);
+    asyncTest( 'attribute changed', function() {
 
-                this.value++;
-            }
-        }
-    }, 'w-extend9');
+        expect( 3 );
 
-    qf.innerHTML = '<w-extend10></w-extend10>';
+        qf.innerHTML = '<fx-foo foo=1></fx-foo>';
 
-    qf.firstChild.calc(1, 2);
+        qf.firstChild.addEventListener('attribute-change', function(evt) {
+            var data = evt.detail;
 
-    ok(qf.firstChild.value == 4);
+            ok(data.attr == 'foo');
+            ok(data.oldVal == '1');
+            ok(data.newVal == '2');
 
-    start();
-});
+            start();
+
+        }, false);
+
+        qf.firstChild.foo = 2;
+
+    });
+
+
+    module('::methods::');
+
+    asyncTest( 'normal invoke', function() {
+
+        expect( 1 );
+
+        qf.innerHTML = '<fx-foo foo=miller></fx-foo>';
+
+        ok(qf.firstChild.hi() == 'hello miller');
+
+        start();
+
+    });
+
+    module('::extend::');
+
+    asyncTest( 'inherit attribute from super tag', function() {
+
+        expect( 3 );
+
+        qf.innerHTML = '<fx-bar foo=1 bar=2></fx-bar>';
+
+        ok(qf.firstChild.foo == '1');
+        ok(qf.firstChild.bar == '2');
+        ok(qf.firstChild.prop1 == 'fx-foo');
+
+        start();
+
+    });
+
+    asyncTest( 'inherit method from super tag', function() {
+
+        expect( 1 );
+
+        qf.innerHTML = '<fx-bar foo=miller></fx-bar>';
+
+        ok(qf.firstChild.hi() == 'hello miller');
+
+        start();
+
+    });
+
+    asyncTest( 'override method', function() {
+
+        expect( 2 );
+
+        qf.innerHTML = '<fx-foo></fx-foo><fx-bar></fx-bar>';
+
+        qf.firstChild.calc(1, 2);
+        qf.lastChild.calc(1, 2);
+
+        ok(qf.firstChild.value == 3);
+        ok(qf.lastChild.value == 2);
+
+        start();
+
+    });
+
+    asyncTest( 'override property', function() {
+
+        expect( 2 );
+
+        qf.innerHTML = '<fx-foo></fx-foo><fx-bar></fx-bar>';
+
+        ok(qf.firstChild.prop2 == 'fx-foo');
+        ok(qf.lastChild.prop2 == 'fx-bar');
+
+        start();
+
+    });
+
+    asyncTest( 'instance property', function() {
+
+        expect( 4 );
+
+        qf.innerHTML = '<fx-foo></fx-foo><fx-bar></fx-bar>';
+
+        ok(qf.firstChild.data.name == 'miller');
+        ok(qf.lastChild.data.name == 'miller');
+
+        qf.lastChild.data.name = 'tester';
+
+        ok(qf.firstChild.data.name == 'miller');
+        ok(qf.lastChild.data.name == 'tester');
+
+        start();
+
+    });
+
+    asyncTest( 'call method in super prorotype', function() {
+
+        expect( 1 );
+
+        qf.innerHTML = '<fx-bar></fx-bar>';
+
+        qf.firstChild.calcPlus(1, 2);
+
+        ok(qf.firstChild.value == 4);
+
+        start();
+
+    });
+}, false);
