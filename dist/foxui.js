@@ -5490,10 +5490,6 @@ for (z in UIEventProto){
 	};
 
 	fox.fn = function(tagName, options, parent) {
-		/* extends xtag here */
-		options = options || {};
-		// extend from parent including prototype and constructor
-
 		return fox.fn.register(tagName, options);
 	};
 
@@ -5609,21 +5605,24 @@ for (z in UIEventProto){
 	var fox = env.fox;
 
 	function getTplAndAttribute(el) {
-		var elTmpl = el.querySelector('fox-template');
-		var obj = {
-			tmpl : null,
-			attributes : [],
-			extends:null
+
+		var tpl = el.querySelector('fox-template');
+		var meta = {
+			tmpl: null,
+			attributes: [],
+			extends: null
 		};
-		if (elTmpl) {
-			obj['tmpl'] = elTmpl;
+
+		if (tpl) {
+			meta['tmpl'] = tpl;
 		}
 
-		obj['extends'] =  el.getAttribute('extends')?el.getAttribute('extends'):null;
+		meta['extends'] =  el.getAttribute('extends');
 
 		var attributes = el.getAttribute('attributes');
-		obj['attributes'] = attributes && attributes.split(' ') || [];
-		return obj;
+		meta['attributes'] = attributes && attributes.split(' ') || [];
+
+		return meta;
 	}
 
     // TODO: 目前只解析以 <link rel="import"/> 方式载入的标签定义，需要增加对于 inline 以及 innerHTML 的解析
@@ -5633,20 +5632,23 @@ for (z in UIEventProto){
 
 		for (var i = 0; i < links.length; i++) {
 			var link = links[i];
-			var foxui = link.import.querySelector('foxui-element[name="' + elementName + '"]');
+			var foxui = link.import.querySelector(
+                'foxui-element[name="' + elementName + '"]');
+
 			if (foxui) {
 				foxuiEl = foxui;
 				break;
 			}
 		}
+
 		var result = {};
+
 		if (foxuiEl) {
 			result = getTplAndAttribute(foxuiEl);
 
 		}
 
 		return result;
-
 	}
 
 	var registerArr = [];
@@ -5657,6 +5659,9 @@ for (z in UIEventProto){
 			_register(elementName, option);
 			registerArr.push(elementName);
 		}
+        else {
+            throw new Error( elementName + ' already defined.' );
+        }
 
 	}
 
@@ -5665,26 +5670,11 @@ for (z in UIEventProto){
 
 		var own = getOwnTplAndAttribute(elementName);
 
+        option = option || {
+            lifecycle: {}
+        };
+
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
-
-		$.extend({
-			lifecycle : {
-				created : function() {
-
-				},
-				inserted : function() {
-				},
-				removed : function() {
-				},
-				attributeChanged : function() {
-
-				}
-			},
-			events : {},
-			extends : 'div',
-			accessors : {},
-			methods : {}
-		}, option);
 
 		option.accessors = option.accessors || {};
 
@@ -5695,47 +5685,34 @@ for (z in UIEventProto){
 			}
 		});
 
-		xtag.register(elementName, {
+        var originCreated = option.lifecycle.created;
 
-			extends : option.extends,
-			lifecycle : {
-				created : function() {
-					var self = this;
+        option.lifecycle.created = function() {
+            var self = this;
 
-					if(own['tmpl']){
-						$("content", own['tmpl']).replaceWith($(this).children().clone(true));
-						$(this).empty();
-						var clone = document.importNode(own['tmpl'], true);
+            if(own['tmpl']){
+                $('content', own['tmpl']).replaceWith($(this).children().clone(true));
+                $(this).empty();
 
-						this['rivets'] = rivets.bind(clone, this);
-						var _$ = {};
-						$('[id]', clone).each(function() {
-							_$[$(this).attr('id')] = this;
-						});
-						this.$ = _$;
-						$(this).append(clone);
-					}
+                var clone = document.importNode(own['tmpl'], true);
+
+                this['rivets'] = rivets.bind(clone, this);
+
+                var _$ = {};
+
+                $('[id]', clone).each(function() {
+                    _$[$(this).attr('id')] = this;
+                });
+                this.$ = _$;
+                $(this).append(clone);
+            }
 
 
-					option.lifecycle && option.lifecycle.created && option.lifecycle.created.apply(this, arguments);
+            originCreated && originCreated.apply(this, arguments);
 
-				},
-				inserted : function() {
-					option.lifecycle && option.lifecycle.inserted && option.lifecycle.inserted.apply(this, arguments);
-				},
-				removed : function() {
-					option.lifecycle && option.lifecycle.removed && option.lifecycle.removed.apply(this, arguments);
-				},
-				attributeChanged : function() {
+        }
 
-					option.lifecycle && option.lifecycle.attributeChanged && option.lifecycle.attributeChanged.apply(this, arguments);
-				}
-			},
-			events : option.events,
-			accessors : option.accessors,
-			methods : option.methods,
-            prototype: option.prototype
-		});
+		xtag.register(elementName, option);
 	}
 
 
