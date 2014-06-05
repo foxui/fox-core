@@ -41,13 +41,13 @@ module.exports = function(grunt) {
         src: [
           'lib/zepto.js',
           'lib/rivets.js',
-          'lib/HTMLImports.js',
           'lib/x-tag-core.js',
           'src/root.js',
           'src/utils.js',
           'src/log.js',
           'src/extend.js',
-          'src/register.js'
+          'src/register.js',
+          'lib/HTMLImports.js'
         ],
         dest: '<%= meta.distPath %><%= pkg.name %>.js'
       }
