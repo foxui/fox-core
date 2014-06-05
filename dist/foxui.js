@@ -6504,7 +6504,7 @@ for (z in UIEventProto){
 	var fox = env.fox;
 
 	function getTplAndAttribute(el) {
-		var elTmpl = el.querySelector("fox-template");
+		var elTmpl = el.querySelector('fox-template');
 		var obj = {
 			tmpl : null,
 			attributes : [],
@@ -6514,10 +6514,10 @@ for (z in UIEventProto){
 			obj['tmpl'] = elTmpl;
 		}
 		
-		obj['extends'] =  el.getAttribute("extends")?el.getAttribute("extends"):null;
+		obj['extends'] =  el.getAttribute('extends')?el.getAttribute('extends'):null;
 		
-		var attributes = el.getAttribute("attributes");
-		obj['attributes'] = attributes && attributes.split(" ") || [];
+		var attributes = el.getAttribute('attributes');
+		obj['attributes'] = attributes && attributes.split(' ') || [];
 		return obj;
 	}
 
@@ -6527,7 +6527,7 @@ for (z in UIEventProto){
 
 		for (var i = 0; i < links.length; i++) {
 			var link = links[i];
-			var foxui = link.import.querySelector("foxui-element[name='" + elementName + "']");
+			var foxui = link.import.querySelector('foxui-element[name="' + elementName + '"]');
 			if (foxui) {
 				foxuiEl = foxui;
 				break;
@@ -6542,14 +6542,14 @@ for (z in UIEventProto){
 		return result;
 
 	}
-
-	var resiterArr = [];
+	
+	var registerArr = [];
 	
 	function register(elementName, option) {
 
-		if (resiterArr.indexOf(elementName) == -1) {
+		if (registerArr.indexOf(elementName) == -1) {
 			_register(elementName, option);
-			resiterArr.push(elementName);
+			registerArr.push(elementName);
 		}
 
 	}
@@ -6599,9 +6599,9 @@ for (z in UIEventProto){
 					own['attributes'].forEach(function(v) {
 						var value = self.getAttribute(v);
 						if (value) {
-							if (value == "false") {
+							if (value == 'false') {
 								value = false;
-							} else if (value == "true") {
+							} else if (value == 'true') {
 								value = true;
 							}
 							self[v] = value;
@@ -6614,8 +6614,8 @@ for (z in UIEventProto){
 	
 						this['rivets'] = rivets.bind(clone, this);
 						var _$ = {};
-						$("[id]", clone).each(function() {
-							_$[$(this).attr("id")] = this;
+						$('[id]', clone).each(function() {
+							_$[$(this).attr('id')] = this;
 						});
 						this.$ = _$;
 						$(this).append(clone);
