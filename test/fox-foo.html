@@ -1,6 +1,6 @@
-<foxui-element name="fx-foo" attributes="foo">
+<fox-element name="fox-foo" attributes="foo">
     <script>
-    fox('fx-foo', {
+    fox('fox-foo', {
 
         lifecycle: {
             created: function() {
@@ -8,8 +8,8 @@
                 this.data = {
                     name: 'miller'
                 };
-                this.prop1 = 'fx-foo';
-                this.prop2 = 'fx-foo';
+                this.prop1 = 'fox-foo';
+                this.prop2 = 'fox-foo';
             },
 
             attributeChanged: function(attr, oldVal, newVal) {
@@ -42,4 +42,4 @@
         }
     });
     </script>
-</foxui>
+</fox>

@@ -7,7 +7,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 1 );
 
-        qf.innerHTML = '<fx-foo foo=1></fx-foo><fx-blank></fx-blank>';
+        qf.innerHTML = '<fox-foo foo=1></fox-foo><fox-blank></fox-blank>';
 
         ok(qf.firstChild.foo === '1');
 
@@ -19,7 +19,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 1 );
 
-        var foo = document.createElement('fx-foo');
+        var foo = document.createElement('fox-foo');
         foo.foo = '1';
 
         ok(foo.hasAttribute('foo'));
@@ -34,8 +34,8 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 2 );
 
-        // fx-foo's attributes:foo boolfoo
-        qf.innerHTML = '<fx-foo foo=1 non=2></fx-foo>';
+        // fox-foo's attributes:foo boolfoo
+        qf.innerHTML = '<fox-foo foo=1 non=2></fox-foo>';
 
         // property can only be visited when defined in attributes
         ok(qf.firstChild.foo === '1');
@@ -49,7 +49,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 2 );
 
-        qf.innerHTML = '<fx-foo foo=1></fx-foo>';
+        qf.innerHTML = '<fox-foo foo=1></fox-foo>';
 
         //change property
         qf.firstChild.foo = 2;
@@ -66,7 +66,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 2 );
 
-        qf.innerHTML = '<fx-foo boolfoo></fx-foo><fx-foo></fx-foo>';
+        qf.innerHTML = '<fox-foo boolfoo></fox-foo><fox-foo></fox-foo>';
 
         ok(qf.firstChild.boolfoo === true);
         ok(qf.lastChild.boolfoo === false);
@@ -79,7 +79,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 3 );
 
-        qf.innerHTML = '<fx-foo foo=1></fx-foo>';
+        qf.innerHTML = '<fox-foo foo=1></fox-foo>';
 
         qf.firstChild.addEventListener('attribute-change', function(evt) {
             var data = evt.detail;
@@ -103,7 +103,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 1 );
 
-        qf.innerHTML = '<fx-foo foo=miller></fx-foo>';
+        qf.innerHTML = '<fox-foo foo=miller></fox-foo>';
 
         ok(qf.firstChild.hi() == 'hello miller');
 
@@ -117,11 +117,11 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 3 );
 
-        qf.innerHTML = '<fx-bar foo=1 bar=2></fx-bar>';
+        qf.innerHTML = '<fox-bar foo=1 bar=2></fox-bar>';
 
         ok(qf.firstChild.foo == '1');
         ok(qf.firstChild.bar == '2');
-        ok(qf.firstChild.prop1 == 'fx-foo');
+        ok(qf.firstChild.prop1 == 'fox-foo');
 
         start();
 
@@ -131,7 +131,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 1 );
 
-        qf.innerHTML = '<fx-bar foo=miller></fx-bar>';
+        qf.innerHTML = '<fox-bar foo=miller></fox-bar>';
 
         ok(qf.firstChild.hi() == 'hello miller');
 
@@ -143,7 +143,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 2 );
 
-        qf.innerHTML = '<fx-foo></fx-foo><fx-bar></fx-bar>';
+        qf.innerHTML = '<fox-foo></fox-foo><fox-bar></fox-bar>';
 
         qf.firstChild.calc(1, 2);
         qf.lastChild.calc(1, 2);
@@ -159,10 +159,10 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 2 );
 
-        qf.innerHTML = '<fx-foo></fx-foo><fx-bar></fx-bar>';
+        qf.innerHTML = '<fox-foo></fox-foo><fox-bar></fox-bar>';
 
-        ok(qf.firstChild.prop2 == 'fx-foo');
-        ok(qf.lastChild.prop2 == 'fx-bar');
+        ok(qf.firstChild.prop2 == 'fox-foo');
+        ok(qf.lastChild.prop2 == 'fox-bar');
 
         start();
 
@@ -172,7 +172,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 4 );
 
-        qf.innerHTML = '<fx-foo></fx-foo><fx-bar></fx-bar>';
+        qf.innerHTML = '<fox-foo></fox-foo><fox-bar></fox-bar>';
 
         ok(qf.firstChild.data.name == 'miller');
         ok(qf.lastChild.data.name == 'miller');
@@ -190,7 +190,7 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         expect( 1 );
 
-        qf.innerHTML = '<fx-bar></fx-bar>';
+        qf.innerHTML = '<fox-bar></fox-bar>';
 
         qf.firstChild.calcPlus(1, 2);
 

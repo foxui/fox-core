@@ -5633,7 +5633,7 @@ for (z in UIEventProto){
 		for (var i = 0; i < links.length; i++) {
 			var link = links[i];
 			var foxui = link.import.querySelector(
-                'foxui-element[name="' + elementName + '"]');
+                'fox-element[name="' + elementName + '"]');
 
 			if (foxui) {
 				foxuiEl = foxui;
