@@ -1,0 +1,23 @@
+<foxui-element name="fx-bar" attributes="bar" extends="fx-foo">
+    <script>
+    fox('fx-bar', {
+        lifecycle: {
+            created: function() {
+                this.prop2 = 'fx-bar';
+            }
+        },
+
+        methods: {
+            calc: function(a, b) {
+                this.value = a * b;
+            },
+
+            calcPlus: function(a, b) {
+                this.$super.calc.apply(this, arguments);
+
+                this.value++;
+            }
+        }
+    });
+    </script>
+</foxui>

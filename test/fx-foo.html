@@ -1,0 +1,45 @@
+<foxui-element name="fx-foo" attributes="foo">
+    <script>
+    fox('fx-foo', {
+
+        lifecycle: {
+            created: function() {
+                this.value = 0;
+                this.data = {
+                    name: 'miller'
+                };
+                this.prop1 = 'fx-foo';
+                this.prop2 = 'fx-foo';
+            },
+
+            attributeChanged: function(attr, oldVal, newVal) {
+                fox.fireEvent(this, 'attribute-change', {
+                    detail: {
+                        attr: attr,
+                        oldVal: oldVal,
+                        newVal: newVal
+                    }
+                });
+            }
+        },
+
+        accessors: {
+            boolfoo: {
+                attribute: {
+                    boolean: true
+                }
+            }
+        },
+
+        methods: {
+            hi: function() {
+                return 'hello ' + this.foo;
+            },
+
+            calc: function(a, b) {
+                this.value = a + b;
+            }
+        }
+    });
+    </script>
+</foxui>

@@ -15,10 +15,6 @@
 	};
 
 	fox.fn = function(tagName, options, parent) {
-		/* extends xtag here */
-		options = options || {};
-		// extend from parent including prototype and constructor
-
 		return fox.fn.register(tagName, options);
 	};
 
