@@ -85,7 +85,7 @@
 		option.accessors = option.accessors || {};
 
 
-		own['attributes'].forEach(function(v) {
+		own['attributes'] && own['attributes'].forEach(function(v) {
 			option.accessors[v] = {
 				attribute : true
 			}
