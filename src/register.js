@@ -86,6 +86,8 @@
 		});
 
         var originCreated = option.lifecycle.created;
+        
+        var originAttrChange = option.lifecycle.attributeChanged;
 
         option.lifecycle.created = function() {
             var self = this;
@@ -109,7 +111,12 @@
 
 
             originCreated && originCreated.apply(this, arguments);
-
+        };
+        
+        option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
+        	var attrChangeFn = option.lifecycle[attr+"Changed"];
+        	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
+        	originAttrChange && originAttrChange.apply(this, arguments);
         }
 
 		xtag.register(elementName, option);

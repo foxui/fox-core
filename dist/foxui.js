@@ -5748,6 +5748,8 @@ for (z in UIEventProto){
 		});
 
         var originCreated = option.lifecycle.created;
+        
+        var originAttrChange = option.lifecycle.attributeChanged;
 
         option.lifecycle.created = function() {
             var self = this;
@@ -5771,7 +5773,12 @@ for (z in UIEventProto){
 
 
             originCreated && originCreated.apply(this, arguments);
-
+        };
+        
+        option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
+        	var attrChangeFn = option.lifecycle[attr+"Changed"];
+        	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
+        	originAttrChange && originAttrChange.apply(this, arguments);
         }
 
 		xtag.register(elementName, option);
@@ -5780,7 +5787,6 @@ for (z in UIEventProto){
 
 	fox.fn.register = register;
 })(this);
-
 /*
  * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
