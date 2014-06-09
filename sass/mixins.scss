@@ -58,6 +58,14 @@
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#{$color-from}', endColorstr='#{$color-to}', GradientType=1 ); // IE6-9
 }
 
+// user-select
+@mixin user-select($select...) {
+  -webkit-user-select: $select;
+     -moz-user-select: $select;
+      -ms-user-select: $select;
+          user-select: $select;
+}
+
 
 // Transforms
 // --------------------------------------------------
@@ -108,6 +116,12 @@
   -webkit-animation-direction: $direction;
      -moz-animation-direction: $direction;
           animation-direction: $direction;
+}
+
+@mixin animation-timing-function($function) {
+  -webkit-animation-timing-function: $function;
+     -moz-animation-timing-function: $function;
+          animation-timing-function: $function;
 }
 
 

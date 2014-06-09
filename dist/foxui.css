@@ -232,70 +232,33 @@ th {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  width: 100%;
+  height: 100%;
 }
 
 body {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  width: 100%;
+  height: 100%;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 17px;
   line-height: 21px;
   color: #000;
-  background-color: #fff;
+  background-color: #efeff4;
 }
 
 a {
-  color: #428bca;
+  color: #1284ff;
   text-decoration: none;
 
   -webkit-tap-highlight-color: transparent;
 }
 a:active {
-  color: #3071a9;
-}
-
-.content {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  background-color: #fff;
-}
-
-.content > * {
-  -webkit-transform: translateZ(0);
-      -ms-transform: translateZ(0);
-          transform: translateZ(0);
-}
-
-.bar-nav ~ .content {
-  padding-top: 44px;
-}
-
-.bar-header-secondary ~ .content {
-  padding-top: 88px;
-}
-
-.bar-footer ~ .content {
-  padding-bottom: 44px;
-}
-
-.bar-footer-secondary ~ .content {
-  padding-bottom: 88px;
-}
-
-.bar-tab ~ .content {
-  padding-bottom: 50px;
-}
-
-.bar-footer-secondary-tab ~ .content {
-  padding-bottom: 94px;
+  color: #006bde;
 }
 
 .content-padded {
