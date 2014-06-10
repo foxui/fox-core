@@ -281,6 +281,30 @@ a:active {
   clear: both;
 }
 
+.flex-container {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display:         flex;
+          flex-direction: column;
+
+  -webkit-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -webkit-flex-flow: column;
+          flex-flow: column;
+}
+
+.flex-item-fixed {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+          flex: 0 0 auto;
+}
+
+.flex-item-full-filled {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 10px;

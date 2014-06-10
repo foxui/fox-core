@@ -92,3 +92,27 @@ a {
 .clearfix {
   @include clearfix();
 }
+
+// Flexbox layout
+.flex-container{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: vertical;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-flex-flow: column;
+    flex-flow:column;
+}
+
+.flex-item-fixed{
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+
+.flex-item-full-filled{
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+}
