@@ -31,6 +31,10 @@ body {
   @include flex-column-container();
 }
 
+body > fox-toolbar{
+  @include flex-column-item-fixed();
+}
+
 // Universal link styling
 a {
   color: $primary-color;
