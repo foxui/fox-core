@@ -27,6 +27,15 @@
                 width: 100%;
                 height: 100%;
                 overflow: hidden;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: flex;
+                -webkit-box-direction: normal;
+                -webkit-box-orient: vertical;
+                -webkit-flex-direction: column;
+                flex-direction: column;
+                -webkit-flex-flow: column;
+                flex-flow:column;
             }
 
             header,footer{
@@ -34,6 +43,9 @@
                 background: hotpink;
                 line-height: 44px;
                 text-align: center;
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                flex: 0 0 auto;
             }
 
             section{
@@ -42,6 +54,8 @@
                 overflow: auto;
                 -webkit-overflow-scrolling: touch;
                 padding:10px;
+                -webkit-box-flex: 1;
+                -webkit-flex: 1;
                 /*flex: 1 0 auto;*/
                 /*-webkit-box-ordinal-group: 1;
                 -webkit-box-flex: 1;
@@ -52,17 +66,16 @@
             }
         </style>
     </head>
-    <body class="flex-container">
-        <div class="page flex-container flex-item-full-filled">
-            <header class="flex-item-fixed">Header</header>
-            <section class="flex-item-full-filled">
+    <body>
+        <div class="page">
+            <header>Header</header>
+            <section>
                 <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
                 <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
                 <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
                 <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
             </section>
-            <footer class="flex-item-fixed">Footer</footer>
+            <footer>Footer</footer>
         </div>
-        <footer class="flex-item-fixed" style="border-top:1px solid #ccc;">Global Footer</footer>
     </body>
 </html>
