@@ -58,6 +58,14 @@
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#{$color-from}', endColorstr='#{$color-to}', GradientType=1 ); // IE6-9
 }
 
+// user-select
+@mixin user-select($select...) {
+  -webkit-user-select: $select;
+     -moz-user-select: $select;
+      -ms-user-select: $select;
+          user-select: $select;
+}
+
 
 // Transforms
 // --------------------------------------------------
@@ -110,6 +118,12 @@
           animation-direction: $direction;
 }
 
+@mixin animation-timing-function($function) {
+  -webkit-animation-timing-function: $function;
+     -moz-animation-timing-function: $function;
+          animation-timing-function: $function;
+}
+
 
 // Misc
 // --------------------------------------------------
@@ -124,4 +138,29 @@
     background-position: $offset 100%, $offset 0;
   }
   background-repeat: no-repeat;
+}
+
+// Flex Layout
+// --------------------------------------------------
+@mixin flex-column-container(){
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: vertical;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-flex-flow: column;
+    flex-flow:column;
+}
+
+@mixin flex-column-item-fixed(){
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+
+@mixin flex-column-item-fullfilled(){
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
 }
