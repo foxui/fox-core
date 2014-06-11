@@ -2740,6 +2740,10 @@ window.$ === undefined && (window.$ = Zepto)
 			return el.className = value ? "" + el.className + " " + this.args[0] : elClass.replace(" " + this.args[0] + " ", ' ').trim();
 		}
 	};
+	
+	Rivets.binders['background-image'] = function(el, value) {
+		el.style["backgroundImage"]="url("+value+ ")";
+	};
 
 	Rivets.binders['class'] = function(el, value) {
 
@@ -5758,7 +5762,7 @@ for (z in UIEventProto){
                 $('content', own['tmpl']).replaceWith($(this).children().clone(true));
                 $(this).empty();
 
-                var clone = document.importNode(own['tmpl'], true);
+                var clone = $(own['tmpl']).clone(true).get(0);
 
                 this['rivets'] = rivets.bind(clone, this);
 
