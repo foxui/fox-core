@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
     <head>
@@ -66,3 +67,86 @@
         <footer class="flex-item-fixed" style="border-top:1px solid #ccc;">Global Footer</footer>
     </body>
 </html>
+=======
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="stylesheet" href="../dist/foxui.css" />
+        <title>Test of flexbox layout</title>
+        <style>
+            body{
+                position: fixed;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                padding: 0;
+                margin:0;
+            }
+
+            body * {
+                box-sizing: border-box;
+            }
+
+            .page{
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: flex;
+                -webkit-box-direction: normal;
+                -webkit-box-orient: vertical;
+                -webkit-flex-direction: column;
+                flex-direction: column;
+                -webkit-flex-flow: column;
+                flex-flow:column;
+            }
+
+            header,footer{
+                height: 44px;
+                background: hotpink;
+                line-height: 44px;
+                text-align: center;
+                -webkit-box-flex: 0;
+                -webkit-flex: 0 0 auto;
+                flex: 0 0 auto;
+            }
+
+            section{
+                background:deepskyblue;
+                text-align: center;
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+                padding:10px;
+                -webkit-box-flex: 1;
+                -webkit-flex: 1;
+                /*flex: 1 0 auto;*/
+                /*-webkit-box-ordinal-group: 1;
+                -webkit-box-flex: 1;
+                -webkit-flex: 1 0 auto;
+                flex: 1 0 auto;
+                -webkit-align-self: auto;
+                align-self: auto;*/
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <header>Header</header>
+            <section>
+                <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
+                <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
+                <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
+                <p>Web pages on iOS by default have a "momentum" style scrolling where a flick of the finger sends the web page scrolling and it keeps going until eventually slowing down and stopping as if friction is slowing it down. Like if you were to push a hockey puck across the ice or something. You might think that any element with scrolling would have this behavior as well, but it doesn't. You can add it back with a special property.</p>
+            </section>
+            <footer>Footer</footer>
+        </div>
+    </body>
+</html>
+>>>>>>> 8624ea4cdd99ec720e60f0862d87a3660329dcf2
