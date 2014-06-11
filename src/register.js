@@ -96,7 +96,7 @@
                 $('content', own['tmpl']).replaceWith($(this).children().clone(true));
                 $(this).empty();
 
-                var clone = document.importNode(own['tmpl'], true);
+                var clone = $(own['tmpl']).clone(true).get(0);
 
                 this['rivets'] = rivets.bind(clone, this);
 
