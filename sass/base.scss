@@ -28,11 +28,29 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  @include flex-column-container();
 }
 
+// Layout
+// -----------------------------------
+// Global Top Toolbar
 body > fox-toolbar{
-  @include flex-column-item-fixed();
+    position: absolute;
+}
+
+// Global Bottom Toolbar
+body > fox-toolbar.bottom{
+    bottom: 0;
+    top: auto;
+}
+
+body > fox-toolbar:not(.bottom) ~ fox-page{
+    padding-top: 44px;
+  // @include flex-column-item-fixed();
+}
+
+body > fox-toolbar.bottom ~ fox-page{
+    padding-bottom: 44px;
+  // @include flex-column-item-fixed();
 }
 
 // Universal link styling

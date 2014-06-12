@@ -5736,9 +5736,11 @@ for (z in UIEventProto){
 
 		var own = getOwnTplAndAttribute(elementName);
 
-        option = option || {
-            lifecycle: {}
-        };
+        option = option || {};
+
+        if (!option.lifecycle) {
+            option.lifecycle = {};
+        }
 
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
 
@@ -5752,7 +5754,7 @@ for (z in UIEventProto){
 		});
 
         var originCreated = option.lifecycle.created;
-        
+
         var originAttrChange = option.lifecycle.attributeChanged;
 
         option.lifecycle.created = function() {
@@ -5778,7 +5780,7 @@ for (z in UIEventProto){
 
             originCreated && originCreated.apply(this, arguments);
         };
-        
+
         option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
         	var attrChangeFn = option.lifecycle[attr+"Changed"];
         	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
@@ -5791,6 +5793,7 @@ for (z in UIEventProto){
 
 	fox.fn.register = register;
 })(this);
+
 /*
  * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
