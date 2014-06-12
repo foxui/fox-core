@@ -54,14 +54,17 @@
 	var registerArr = [];
 
 	function register(elementName, option) {
-
-		if (registerArr.indexOf(elementName) == -1) {
-			_register(elementName, option);
-			registerArr.push(elementName);
-		}
-        else {
-            throw new Error( elementName + ' already defined.' );
-        }
+		window.addEventListener('HTMLImportsLoaded', function(e) {
+			debugger;
+			if (registerArr.indexOf(elementName) == -1) {
+				_register(elementName, option);
+				registerArr.push(elementName);
+			}
+	        else {
+	            throw new Error( elementName + ' already defined.' );
+	        }
+		},true);
+		
 
 	}
 
