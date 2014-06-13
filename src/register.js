@@ -54,14 +54,17 @@
 	var registerArr = [];
 
 	function register(elementName, option) {
-
-		if (registerArr.indexOf(elementName) == -1) {
-			_register(elementName, option);
-			registerArr.push(elementName);
-		}
-        else {
-            throw new Error( elementName + ' already defined.' );
-        }
+		window.addEventListener('HTMLImportsLoaded', function(e) {
+			debugger;
+			if (registerArr.indexOf(elementName) == -1) {
+				_register(elementName, option);
+				registerArr.push(elementName);
+			}
+	        else {
+	            throw new Error( elementName + ' already defined.' );
+	        }
+		},true);
+		
 
 	}
 
@@ -70,11 +73,9 @@
 
 		var own = getOwnTplAndAttribute(elementName);
 
-        option = option || {};
-
-        if (!option.lifecycle) {
-            option.lifecycle = {};
-        }
+        option = option || {
+            lifecycle: {}
+        };
 
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
 
@@ -88,7 +89,7 @@
 		});
 
         var originCreated = option.lifecycle.created;
-
+        
         var originAttrChange = option.lifecycle.attributeChanged;
 
         option.lifecycle.created = function() {
@@ -114,7 +115,7 @@
 
             originCreated && originCreated.apply(this, arguments);
         };
-
+        
         option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
         	var attrChangeFn = option.lifecycle[attr+"Changed"];
         	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
