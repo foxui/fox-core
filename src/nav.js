@@ -43,8 +43,6 @@
         var inPage;
         var outPage;
 
-        console.log(stacks);
-
         var previousData = stacks[stacks.length -2];
 
         // back to index page or previous page
@@ -137,7 +135,6 @@
             this.started = true;
 
             window.addEventListener('popstate', function() {
-                console.log('popstate');
                 onPopState();
             }, false);
 
