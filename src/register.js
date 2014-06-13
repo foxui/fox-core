@@ -73,9 +73,11 @@
 
 		var own = getOwnTplAndAttribute(elementName);
 
-        option = option || {
-            lifecycle: {}
-        };
+        option = option || {};
+
+        if (!option.lifecycle) {
+            option.lifecycle = {};
+        }
 
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
 
