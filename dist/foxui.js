@@ -5739,9 +5739,11 @@ for (z in UIEventProto){
 
 		var own = getOwnTplAndAttribute(elementName);
 
-        option = option || {
-            lifecycle: {}
-        };
+        option = option || {};
+
+        if (!option.lifecycle) {
+            option.lifecycle = {};
+        }
 
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
 
@@ -6735,8 +6737,6 @@ if (!HTMLImports.useNative) {
         var inPage;
         var outPage;
 
-        console.log(stacks);
-
         var previousData = stacks[stacks.length -2];
 
         // back to index page or previous page
@@ -6829,7 +6829,6 @@ if (!HTMLImports.useNative) {
             this.started = true;
 
             window.addEventListener('popstate', function() {
-                console.log('popstate');
                 onPopState();
             }, false);
 
