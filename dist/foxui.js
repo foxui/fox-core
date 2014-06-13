@@ -5721,7 +5721,7 @@ for (z in UIEventProto){
 
 	function register(elementName, option) {
 		window.addEventListener('HTMLImportsLoaded', function(e) {
-			debugger;
+
 			if (registerArr.indexOf(elementName) == -1) {
 				_register(elementName, option);
 				registerArr.push(elementName);
@@ -5730,7 +5730,7 @@ for (z in UIEventProto){
 	            throw new Error( elementName + ' already defined.' );
 	        }
 		},true);
-		
+
 
 	}
 
@@ -5755,7 +5755,7 @@ for (z in UIEventProto){
 		});
 
         var originCreated = option.lifecycle.created;
-        
+
         var originAttrChange = option.lifecycle.attributeChanged;
 
         option.lifecycle.created = function() {
@@ -5781,7 +5781,7 @@ for (z in UIEventProto){
 
             originCreated && originCreated.apply(this, arguments);
         };
-        
+
         option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
         	var attrChangeFn = option.lifecycle[attr+"Changed"];
         	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
@@ -5794,6 +5794,7 @@ for (z in UIEventProto){
 
 	fox.fn.register = register;
 })(this);
+
 /*
  * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style

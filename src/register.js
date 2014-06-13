@@ -55,7 +55,7 @@
 
 	function register(elementName, option) {
 		window.addEventListener('HTMLImportsLoaded', function(e) {
-			debugger;
+
 			if (registerArr.indexOf(elementName) == -1) {
 				_register(elementName, option);
 				registerArr.push(elementName);
@@ -64,7 +64,7 @@
 	            throw new Error( elementName + ' already defined.' );
 	        }
 		},true);
-		
+
 
 	}
 
@@ -89,7 +89,7 @@
 		});
 
         var originCreated = option.lifecycle.created;
-        
+
         var originAttrChange = option.lifecycle.attributeChanged;
 
         option.lifecycle.created = function() {
@@ -115,7 +115,7 @@
 
             originCreated && originCreated.apply(this, arguments);
         };
-        
+
         option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
         	var attrChangeFn = option.lifecycle[attr+"Changed"];
         	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
