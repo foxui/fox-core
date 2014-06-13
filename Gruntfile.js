@@ -16,7 +16,8 @@ module.exports = function(grunt) {
 
     // Metadata.
     meta: {
-      distPath:       'dist/'
+      distPath:       'dist/',
+      srcPath: 'src/'
     },
 
     banner: '/*!\n' +
@@ -47,7 +48,8 @@ module.exports = function(grunt) {
           'src/log.js',
           'src/extend.js',
           'src/register.js',
-          'lib/HTMLImports.js'
+          'lib/HTMLImports.js',
+          'src/nav.js'
         ],
         dest: '<%= meta.distPath %><%= pkg.name %>.js'
       }
@@ -110,11 +112,18 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      scripts: {
+      sass: {
         files: [
-          '<%= meta.srcPath %>/**/*.scss'
+          '<%= meta.srcPath %>**/*.scss'
         ],
         tasks: ['sass']
+      },
+
+      scripts: {
+        files: [
+          '<%= meta.srcPath %>**/*.js'
+        ],
+        tasks: ['dist-js']
       }
     },
 

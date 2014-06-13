@@ -256,6 +256,10 @@ body {
   background-color: #efeff4;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body > fox-toolbar {
   position: absolute;
 }
@@ -276,8 +280,6 @@ body > fox-toolbar.bottom ~ fox-page {
 a {
   color: #1284ff;
   text-decoration: none;
-
-  -webkit-tap-highlight-color: transparent;
 }
 a:active {
   color: #006bde;
