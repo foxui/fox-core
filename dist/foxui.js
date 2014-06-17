@@ -5764,10 +5764,10 @@ for (z in UIEventProto){
             var self = this;
 
             if(own['tmpl']){
-                $('content', own['tmpl']).replaceWith($(this).children().clone(true));
+            	var $tmpl = $(own['tmpl']).clone(true);
+                $('content', $tmpl).replaceWith($(this).children().clone(true));
                 $(this).empty();
-
-                var clone = $(own['tmpl']).clone(true).get(0);
+                var clone = $tmpl.clone(true).get(0);
 
                 this['rivets'] = rivets.bind(clone, this);
 
