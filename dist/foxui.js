@@ -5768,10 +5768,17 @@ for (z in UIEventProto){
 
             if(own['tmpl']){
             	var $tmpl = $(own['tmpl']).clone(true);
+            	
+            	
                 $('content', $tmpl).replaceWith($(this).children().clone(true));
                 $(this).empty();
                 var clone = $tmpl.clone(true).get(0);
 
+				$("fox-tmpl",clone).each(function(){
+					rivets.bind(this, this);
+				});
+				
+				
                 this['rivets'] = rivets.bind(clone, this);
 
                 var _$ = {};
