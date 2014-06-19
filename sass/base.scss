@@ -36,23 +36,54 @@ body {
 
 // Layout
 // -----------------------------------
+
+// bars' base style
+.bar{
+  position: relative;
+  top:0;
+  left:0;
+  padding: 0;
+  margin: 0;
+  cursor: default;
+  height: $bar-base-height;
+  width: 100%;
+  background: #f8f8f8;
+  color: #1f1f21;
+  border-bottom: 1px solid #ddd;
+  font-weight: 400;
+  display: block;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  white-space: nowrap;
+  overflow: hidden;
+  word-spacing: 0;
+
+  &.bottom{
+    border-bottom:none;
+    border-top: 1px solid #ddd;
+  }
+
+  @include user-select(none);
+  @include box-shadow(none);
+}
+
 // Global Top Toolbar
-body > fox-toolbar{
+body > .bar{
     position: absolute;
 }
 
 // Global Bottom Toolbar
-body > fox-toolbar.bottom{
+body > .bar.bottom{
     bottom: 0;
     top: auto;
 }
 
-body > fox-toolbar:not(.bottom) ~ fox-page{
+body > .bar:not(.bottom) ~ fox-page{
     padding-top: 44px;
   // @include flex-column-item-fixed();
 }
 
-body > fox-toolbar.bottom ~ fox-page{
+body > .bar.bottom ~ fox-page{
     padding-bottom: 44px;
   // @include flex-column-item-fixed();
 }
