@@ -99,8 +99,7 @@
 
         <label>remaining:</label><input type="range" maximum="500" minimum="0" onchange="auction.auction.remaining=this.value">
 
-        <fox-baz>
-            <fox-json></fox-json>
+        <fox-baz sourceSelector="@auction">
             <section id="auction">
               <h1>{ data.action.title }</h1>
               <img rv-src="data.action.image.url">
