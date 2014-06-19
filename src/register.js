@@ -79,6 +79,9 @@
             option.lifecycle = {};
         }
 
+        // 扩展数据源支持
+        fox.fn.datasource(option);
+
 		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
 
 		option.accessors = option.accessors || {};
@@ -119,6 +122,8 @@
                 });
                 this.$ = _$;
                 $(this).append(clone);
+            }else{
+                this['rivets'] = rivets.bind(this, this);
             }
 
 

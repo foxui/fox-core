@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Demo of datasource</title>
+        <script src="../../dist/foxui.js"></script>
+        <script src="../../src/register.js"></script>
+        <link rel="import" href="fox-json.html"/>
+        <link rel="import" href="fox-foo.html"/>
+        <link rel="import" href="fox-bar.html"/>
+        <link rel="import" href="fox-baz.html"/>
+        <style>
+            body{
+                margn: 20px;
+            }
+            fox-foo,fox-bar, fox-baz{
+                position: relative;
+                display: block;
+                background: hotpink;
+                padding: 15px;
+                margin: 25px;
+                border-radius: 5px;
+                color: #fff;
+            }
+
+            fox-foo:before{
+                position: absolute;
+                left: 10px;
+                top: -15px;
+                background: #f0f0f0;
+                padding: 5px;
+                color: #666;
+                border-radius: 3px;
+                content: 'fox-foo';
+            }
+
+            fox-bar:before{
+                position: absolute;
+                left: 10px;
+                top: -15px;
+                background: #f0f0f0;
+                padding: 5px;
+                color: #666;
+                border-radius: 3px;
+                content: 'fox-bar';
+            }
+        </style>
+        <script>
+            var data = {
+                products: {
+                    list: [
+                        {name: 'lucy'}
+                    ]
+                }
+            };
+
+            var auction = {
+                action: {
+                    title: 'Buy me',
+                    image: {
+                        url: 'http://img0.bdstatic.com/img/image/shouye/dengni37.jpg'
+                    }
+                },
+
+                auction: {
+                    remaining: 150
+                },
+
+                controller: {
+                    bid: function() {
+                        alert('bid');
+                    }
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <h3>全局数据源</h3>
+        <button onclick="this.nextElementSibling.data={name: 'Miller'}">修改数据源</button>
+        <fox-bar sourceSelector="@data"></fox-bar>
+
+        <h3>全局数据源并进行数据过滤</h3>
+        <fox-foo sourceSelector="@data"></fox-foo>
+
+        <h3>关联外部数据源元素 fox-json</h3>
+        <button onclick="document.querySelector('#myJson').setValue(data);">修改 fox-json</button>
+        <fox-bar sourceSelector="#myJson"></fox-bar>
+        <fox-json id="myJson" json='{"name": "Miller"}'></fox-json>
+
+        <h3>关联内部数据源元素 fox-json</h3>
+        <p>
+            注意：修改 innerHTML 会导致内部数据源元素丢失
+        </p>
+        <fox-bar>
+            <fox-json id="myJson2" json='{"name": "Miller"}'></fox-json>
+        </fox-bar>
+
+        <h3>数据源 + rivets模板</h3>
+
+        <label>remaining:</label><input type="range" maximum="500" minimum="0" onchange="auction.auction.remaining=this.value">
+
+        <fox-baz sourceSelector="@auction">
+            <section id="auction">
+              <h1>{ data.action.title }</h1>
+              <img rv-src="data.action.image.url">
+
+              <aside rv-show='data.auction.remaining | lt 120'>
+                <h4>Hurry up!<h4>
+                <p>This auction is ending in { data.auction.remaining | time }.</p>
+              </aside>
+
+              <button rv-on-click="data.controller.bid">Place a bid</button>
+            </section>
+        </fox-baz>
+    </body>
+</html>

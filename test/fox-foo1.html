@@ -1,0 +1,15 @@
+<fox-element name="fox-foo1">
+    <script>
+    xtag.register('fox-foo1', {
+        lifecycle: {
+            created: function() {
+                console.log('created: ' + this.tagName);
+            },
+
+            inserted: function() {
+                console.log('inserted: ' + this.tagName);
+            }
+        }
+    });
+    </script>
+</fox>

@@ -174,13 +174,13 @@ document.addEventListener('HTMLImportsLoaded', function() {
 
         qf.innerHTML = '<fox-foo></fox-foo><fox-bar></fox-bar>';
 
-        ok(qf.firstChild.data.name == 'miller');
-        ok(qf.lastChild.data.name == 'miller');
+        ok(qf.firstChild.person.name == 'miller');
+        ok(qf.lastChild.person.name == 'miller');
 
-        qf.lastChild.data.name = 'tester';
+        qf.lastChild.person.name = 'tester';
 
-        ok(qf.firstChild.data.name == 'miller');
-        ok(qf.lastChild.data.name == 'tester');
+        ok(qf.firstChild.person.name == 'miller');
+        ok(qf.lastChild.person.name == 'tester');
 
         start();
 

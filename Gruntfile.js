@@ -49,7 +49,8 @@ module.exports = function(grunt) {
           'src/extend.js',
           'src/register.js',
           'lib/HTMLImports.js',
-          'src/nav.js'
+          'src/nav.js',
+          'src/datasource.js'
         ],
         dest: '<%= meta.distPath %><%= pkg.name %>.js'
       }
