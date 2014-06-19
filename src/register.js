@@ -101,37 +101,46 @@
             var self = this;
 
             if(own['tmpl']){
+            	
             	var $tmpl = $(own['tmpl']).clone(true);
+           
+            	
+            	var $data =  $(this).children('fox-json,fox-ajax').detach();
+            	
+            	var $children = $(this).children().clone(true);
             	
             	
-                $('content', $tmpl).replaceWith($(this).children().clone(true));
+                $('content', $tmpl).replaceWith($children);
+                
+                
                 $(this).empty();
+                
                 var clone = $tmpl.clone(true).get(0);
-
-				$("fox-tmpl",clone).each(function(){
+				
+				$('fox-tmpl',clone).each(function(){
 					rivets.bind(this, this);
 				});
 				
-				
-                this['rivets'] = rivets.bind(clone, this);
-
                 var _$ = {};
 
                 $('[id]', clone).each(function() {
                     _$[$(this).attr('id')] = this;
                 });
                 this.$ = _$;
-                $(this).append(clone);
-            }else{
-                this['rivets'] = rivets.bind(this, this);
+                
+                $(this).append($data);
+                
+                $(this).append($(clone).children());
             }
-
+            
+            
+ 			this['rivets'] = rivets.bind(this, this);
 
             originCreated && originCreated.apply(this, arguments);
         };
 
         option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
-        	var attrChangeFn = option.lifecycle[attr+"Changed"];
+        	var attrChangeFn = option.lifecycle[attr+'Changed'];
         	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
         	originAttrChange && originAttrChange.apply(this, arguments);
         }

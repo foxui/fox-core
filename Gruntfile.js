@@ -44,6 +44,7 @@ module.exports = function(grunt) {
           'lib/rivets.js',
           'lib/x-tag-core.js',
           'src/root.js',
+          'src/rivets_extend.js',
           'src/utils.js',
           'src/log.js',
           'src/extend.js',
