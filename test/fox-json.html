@@ -1,0 +1,46 @@
+<fox-element name="fox-json" attributes="json">
+
+    <script>
+
+        function fireChange(oldVal, newVal) {
+            fox.fireEvent(this, 'data-change', {
+                'detail' : {
+                    oldVal : oldVal,
+                    newVal : newVal
+                }
+            });
+        }
+
+        fox('fox-json', {
+            lifecycle : {
+                created: function() {
+                    // property
+                    this.data = this.getValue();
+                    fireChange.apply(this, [null, this.data]);
+                },
+
+                jsonChanged : function(oldVal, newVal) {
+                    fireChange.apply(this, arguments);
+
+                    // property
+                    this.data = this.getValue();
+                }
+            },
+
+            methods: {
+                getValue: function() {
+                    return JSON.parse(this.json);
+                },
+
+                setValue: function(jsonObj) {
+
+                    if (jsonObj) {
+                        this.json = JSON.stringify(jsonObj);
+                    }
+                }
+            }
+
+        });
+    </script>
+
+</fox-element>

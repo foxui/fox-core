@@ -5,7 +5,7 @@
         lifecycle: {
             created: function() {
                 this.value = 0;
-                this.data = {
+                this.person = {
                     name: 'miller'
                 };
                 this.prop1 = 'fox-foo';
@@ -38,6 +38,14 @@
 
             calc: function(a, b) {
                 this.value = a + b;
+            },
+
+            datasourceChanged: function(newVal, oldVal) {
+                console.log(this.data);
+            },
+
+            datasourceFilter: function(data) {
+                return data.products.list;
             }
         }
     });

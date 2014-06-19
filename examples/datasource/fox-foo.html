@@ -1,0 +1,26 @@
+<fox-element name="fox-foo">
+    <script>
+    fox('fox-foo', {
+
+        lifecycle: {
+            created: function() {
+
+            },
+
+            attributeChanged: function(attr, oldVal, newVal) {
+
+            }
+        },
+
+        methods: {
+            datasourceChanged: function(newVal, oldVal) {
+                this.innerHTML = 'data changed: ' + JSON.stringify(this.data);
+            },
+
+            datasourceFilter: function(data) {
+                return data.products.list;
+            }
+        }
+    });
+    </script>
+</fox>

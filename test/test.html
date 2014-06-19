@@ -5,18 +5,30 @@
         <title>Test suites of fox-core</title>
         <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
         <script src="../dist/foxui.js"></script>
+        <link rel="import" href="fox-json.html"/>
         <link rel="import" href="fox-blank.html"/>
         <link rel="import" href="fox-foo.html"/>
         <link rel="import" href="fox-bar.html"/>
         <!--TODO: add template testcase-->
+        <script>
+            var data = {
+                products: {
+                    list: [
+                        {name: 'lucy'}
+                    ]
+                }
+            };
+        </script>
     </head>
     <body>
         <div id="qunit"></div>
 
         <div id="qunit-fixture">
         </div>
+        <fox-foo sourceSelector="@data">
 
-        <w-test><w-test1></w-test1></w-test>
+        </fox-foo>
+        <fox-json id="foxdata" json='{"name":"lisa"}'></fox-json>
 
         <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
         <script src="test.js"></script>
