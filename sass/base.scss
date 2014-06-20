@@ -88,13 +88,18 @@ body > .bar.bottom ~ fox-page{
   // @include flex-column-item-fixed();
 }
 
+body > fox-tabbar.bar.bottom ~ fox-page{
+    padding-bottom: 49px;
+  // @include flex-column-item-fixed();
+}
+
 // Universal link styling
 a {
   color: $primary-color;
   text-decoration: none;
 
   &:active {
-    color: darken($primary-color, 10%);
+    // color: darken($primary-color, 10%);
   }
 }
 

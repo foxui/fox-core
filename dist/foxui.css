@@ -308,12 +308,13 @@ body > .bar.bottom ~ fox-page {
   padding-bottom: 44px;
 }
 
+body > fox-tabbar.bar.bottom ~ fox-page {
+  padding-bottom: 49px;
+}
+
 a {
   color: #1284ff;
   text-decoration: none;
-}
-a:active {
-  color: #006bde;
 }
 
 .content-padded {
