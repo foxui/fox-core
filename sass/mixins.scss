@@ -164,3 +164,26 @@
     -webkit-box-flex: 1;
     -webkit-flex: 1;
 }
+
+@mixin flex-row-container(){
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: horizontal;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex-flow: row;
+    flex-flow:row;
+}
+
+@mixin flex-row-item-fixed(){
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+
+@mixin flex-row-item-fullfilled(){
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+}

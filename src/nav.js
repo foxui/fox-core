@@ -145,7 +145,7 @@
             page = document.createElement('fox-page');
             page.class = 'transition-out';
             page.innerHTML =
-                '<fox-toolbar title="' + title + '">' +
+                '<fox-toolbar title="' + title || '' + '">' +
                     '<fox-icon icon="icon-left-nav" class="left" onclick="history.back();">' +
                     '</fox-icon>' +
                     '<fox-icon icon="icon-spin5" class="right animate-spin">' +
