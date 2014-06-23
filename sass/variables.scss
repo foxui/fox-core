@@ -56,3 +56,8 @@ $timing-fuction: cubic-bezier(.1,.5,.1,1) !default; // Inspired by @c2prods
 
 $border-default: 1px solid #ddd !default;
 $border-radius: 6px !default;
+
+// Lists for manage z-index of components
+// --------------------------------------------------
+
+$elements: fox-sidemenu, fox-page, fox-page-content, fox-content, fox-icon, fox-image-slider, fox-listview-filter, fox-tabbar, fox-toolbar, fox-actionsheet, fox-dialog;
