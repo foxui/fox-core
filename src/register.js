@@ -5,7 +5,7 @@
 	var fox = env.fox;
 
 	function getTplAndAttribute(el) {
-
+		
 		var tpl = el.querySelector('fox-template');
 		var meta = {
 			tmpl: null,
@@ -24,10 +24,22 @@
 
 		return meta;
 	}
+	
+	function getImportLinks(doc,arr){
+	 	var links = doc.querySelectorAll('link[rel="import"]');
+	 	for(var i = 0;i<links.length;i++){
+	 		var link = links[i];
+	 		arr.push(link);
+	 		getImportLinks(link.import,arr);
+	 	}
+	}
 
     // TODO: 目前只解析以 <link rel="import"/> 方式载入的标签定义，需要增加对于 inline 以及 innerHTML 的解析
 	function getOwnTplAndAttribute(elementName) {
-		var links = document.querySelectorAll('link[rel="import"]');
+		var links = [];
+		getImportLinks(document,links);
+		// var links = document.querySelectorAll('link[rel="import"]');
+		
 		var foxuiEl;
 
 		for (var i = 0; i < links.length; i++) {
@@ -55,7 +67,6 @@
 
 	function register(elementName, option) {
 		window.addEventListener('HTMLImportsLoaded', function(e) {
-
 			if (registerArr.indexOf(elementName) == -1) {
 				_register(elementName, option);
 				registerArr.push(elementName);
@@ -69,7 +80,6 @@
 	}
 
 	function _register(elementName, option) {
-
 
 		var own = getOwnTplAndAttribute(elementName);
 
