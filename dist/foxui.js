@@ -5672,7 +5672,7 @@ rivets.binders['class'] = function(el, value) {
 	var fox = env.fox;
 
 	function getTplAndAttribute(el) {
-
+		
 		var tpl = el.querySelector('fox-template');
 		var meta = {
 			tmpl: null,
@@ -5691,10 +5691,22 @@ rivets.binders['class'] = function(el, value) {
 
 		return meta;
 	}
+	
+	function getImportLinks(doc,arr){
+	 	var links = doc.querySelectorAll('link[rel="import"]');
+	 	for(var i = 0;i<links.length;i++){
+	 		var link = links[i];
+	 		arr.push(link);
+	 		getImportLinks(link.import,arr);
+	 	}
+	}
 
     // TODO: 目前只解析以 <link rel="import"/> 方式载入的标签定义，需要增加对于 inline 以及 innerHTML 的解析
 	function getOwnTplAndAttribute(elementName) {
-		var links = document.querySelectorAll('link[rel="import"]');
+		var links = [];
+		getImportLinks(document,links);
+		// var links = document.querySelectorAll('link[rel="import"]');
+		
 		var foxuiEl;
 
 		for (var i = 0; i < links.length; i++) {
@@ -5722,7 +5734,6 @@ rivets.binders['class'] = function(el, value) {
 
 	function register(elementName, option) {
 		window.addEventListener('HTMLImportsLoaded', function(e) {
-
 			if (registerArr.indexOf(elementName) == -1) {
 				_register(elementName, option);
 				registerArr.push(elementName);
@@ -5736,7 +5747,6 @@ rivets.binders['class'] = function(el, value) {
 	}
 
 	function _register(elementName, option) {
-
 
 		var own = getOwnTplAndAttribute(elementName);
 
@@ -5824,7 +5834,8 @@ rivets.binders['class'] = function(el, value) {
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
  */
-window.HTMLImports = window.HTMLImports || {flags:{}};/*
+window.HTMLImports = window.HTMLImports || {flags:{}};
+/*
  * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
@@ -6007,6 +6018,7 @@ window.HTMLImports = window.HTMLImports || {flags:{}};/*
   scope.Loader = Loader;
 
 })(window.HTMLImports);
+
 /*
  * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
@@ -6084,6 +6096,21 @@ var importParser = {
     this.parsingElement = null;
     flags.parse && console.log('completed', elt);
   },
+  invalidateParse: function(doc) {
+    if (doc && doc.__importLink) {
+      doc.__importParsed = doc.__importLink.__importParsed = false;
+      this.parseSoon();
+    }
+  },
+  parseSoon: function() {
+    if (this._parseSoon) {
+      cancelAnimationFrame(this._parseDelay);
+    }
+    var parser = this;
+    this._parseSoon = requestAnimationFrame(function() {
+      parser.parseNext();
+    });
+  },
   parseImport: function(elt) {
     // TODO(sorvell): consider if there's a better way to do this;
     // expose an imports parsing hook; this is needed, for example, by the
@@ -6142,9 +6169,44 @@ var importParser = {
       self.markParsingComplete(elt);
       self.parseNext();
     };
-    elt.addEventListener('load', done);
-    elt.addEventListener('error', done);
+    // NOTE:Android Browser lt 4.4 does not fire load event,fire directly is a good solution
+     
+	elt.addEventListener('load', done);
+	elt.addEventListener('error', done);	
+    if (elt.rel == "stylesheet") {
+		(function(fn) {
+			function _cssIsLoaded(cssStylesheet) {
+				var cssLoaded = 0;
+				try {
+					if (cssStylesheet.sheet && cssStylesheet.sheet.cssRules.length > 0)
+						cssLoaded = 1;
+					else if (cssStylesheet.styleSheet && cssStylesheet.styleSheet.cssText.length > 0)
+						cssLoaded = 1;
+					else if (cssStylesheet.innerHTML && cssStylesheet.innerHTML.length > 0)
+						cssLoaded = 1;
+				} catch(ex) {
+				}
 
+				if (cssLoaded) {
+					fn(new CustomEvent('load', {
+						bubbles : false
+					}));
+					// your css is loaded! Do work!
+					// I'd recommend having listeners subscribe to cssLoaded event,
+					// and then here you can emit the event (ie. EventManager.emit('cssLoaded');
+				} else {
+					// I'm using underscore library, but setTimeout would work too
+					// You basically just need to call the function again in say, 50 ms
+					setTimeout(function() {
+						_cssIsLoaded(cssStylesheet);
+					}, 50);
+				}
+
+			}
+
+			_cssIsLoaded(elt);
+		})(done);
+	}
     // NOTE: IE does not fire "load" event for styles that have already loaded
     // This is in violation of the spec, so we try our hardest to work around it
     if (isIe && elt.localName === 'style') {
@@ -6167,7 +6229,7 @@ var importParser = {
       }
       // dispatch a fake load event and continue parsing
       if (fakeLoad) {
-        elt.dispatchEvent(new CustomEvent('load', {bubbles: false}));
+        done(new CustomEvent('load', {bubbles: false}));
       }
     }
   },
@@ -6304,6 +6366,7 @@ scope.path = path;
 scope.isIE = isIe;
 
 })(HTMLImports);
+
 /*
  * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
@@ -6599,6 +6662,7 @@ scope.isImportLoaded = isImportLoaded;
 scope.importLoader = importLoader;
 
 })(window.HTMLImports);
+
  /*
 Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
@@ -6610,6 +6674,7 @@ license that can be found in the LICENSE file.
 var IMPORT_LINK_TYPE = scope.IMPORT_LINK_TYPE;
 var importSelector = 'link[rel=' + IMPORT_LINK_TYPE + ']';
 var importer = scope.importer;
+var parser = scope.parser;
 
 // we track mutations for addedNodes, looking for imports
 function handler(mutations) {
@@ -6622,7 +6687,9 @@ function handler(mutations) {
 
 // find loadable elements and add them to the importer
 function addedNodes(nodes) {
+  var owner;
   for (var i=0, l=nodes.length, n; (i<l) && (n=nodes[i]); i++) {
+    owner = owner || n.ownerDocument;
     if (shouldLoadNode(n)) {
       importer.loadNode(n);
     }
@@ -6630,6 +6697,14 @@ function addedNodes(nodes) {
       addedNodes(n.children);
     }
   }
+  // TODO(sorvell): This is not the right approach here. We shouldn't need to
+  // invalidate parsing when an element is added. Disabling this code 
+  // until a better approach is found.
+  /*
+  if (owner) {
+    parser.invalidateParse(owner);
+  }
+  */
 }
 
 function shouldLoadNode(node) {
@@ -6657,6 +6732,7 @@ scope.observe = observe;
 importer.observe = observe;
 
 })(HTMLImports);
+
 /*
  * Copyright 2013 The Polymer Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style
