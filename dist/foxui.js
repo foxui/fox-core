@@ -5773,41 +5773,38 @@ rivets.binders['class'] = function(el, value) {
         var originCreated = option.lifecycle.created;
 
         var originAttrChange = option.lifecycle.attributeChanged;
-
+		
         option.lifecycle.created = function() {
             var self = this;
 
             if(own['tmpl']){
             	
-            	var $tmpl = $(own['tmpl']).clone(true);
+            	var $tmpl = $(own['tmpl']);
            
-            	
             	var $data =  $(this).children('fox-json,fox-ajax').detach();
             	
-            	var $children = $(this).children().clone(true);
-            	
+            	var $children = $(this).children();
             	
                 $('content', $tmpl).replaceWith($children);
                 
+                $tmpl = $tmpl.clone(true);
                 
                 $(this).empty();
                 
-                var clone = $tmpl.clone(true).get(0);
-				
-				$('fox-tmpl',clone).each(function(){
+				$('fox-tmpl',$tmpl).each(function(){
 					rivets.bind(this, this);
 				});
 				
                 var _$ = {};
 
-                $('[id]', clone).each(function() {
+                $('[id]', $tmpl).each(function() {
                     _$[$(this).attr('id')] = this;
                 });
                 this.$ = _$;
                 
                 $(this).append($data);
                 
-                $(this).append($(clone).children());
+                $(this).append($tmpl.children());
             }
             
             
