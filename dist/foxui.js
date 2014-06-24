@@ -5673,7 +5673,7 @@ rivets.binders['class'] = function(el, value) {
 
 	function getTplAndAttribute(el) {
 		
-		var tpl = el.querySelector('fox-template');
+		var tpl = el.querySelector('tpl');
 		var meta = {
 			tmpl: null,
 			attributes: [],
@@ -5779,7 +5779,9 @@ rivets.binders['class'] = function(el, value) {
 
             if(own['tmpl']){
             	
-            	var $tmpl = $(own['tmpl']);
+            	var $tmpl = $(own['tmpl']).clone(true);
+           
+           		$tmpl['rivets'] = rivets.bind($tmpl.get(0), this);
            
             	var $data =  $(this).children('fox-json,fox-ajax').detach();
             	
@@ -5787,7 +5789,7 @@ rivets.binders['class'] = function(el, value) {
             	
                 $('content', $tmpl).replaceWith($children);
                 
-                $tmpl = $tmpl.clone(true);
+                
                 
                 $(this).empty();
                 
@@ -5808,7 +5810,7 @@ rivets.binders['class'] = function(el, value) {
             }
             
             
- 			this['rivets'] = rivets.bind(this, this);
+ 			
 
             originCreated && originCreated.apply(this, arguments);
         };

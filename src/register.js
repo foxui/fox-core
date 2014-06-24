@@ -6,7 +6,7 @@
 
 	function getTplAndAttribute(el) {
 		
-		var tpl = el.querySelector('fox-template');
+		var tpl = el.querySelector('tpl');
 		var meta = {
 			tmpl: null,
 			attributes: [],
@@ -112,7 +112,9 @@
 
             if(own['tmpl']){
             	
-            	var $tmpl = $(own['tmpl']);
+            	var $tmpl = $(own['tmpl']).clone(true);
+           
+           		$tmpl['rivets'] = rivets.bind($tmpl.get(0), this);
            
             	var $data =  $(this).children('fox-json,fox-ajax').detach();
             	
@@ -120,7 +122,7 @@
             	
                 $('content', $tmpl).replaceWith($children);
                 
-                $tmpl = $tmpl.clone(true);
+                
                 
                 $(this).empty();
                 
@@ -141,7 +143,7 @@
             }
             
             
- 			this['rivets'] = rivets.bind(this, this);
+ 			
 
             originCreated && originCreated.apply(this, arguments);
         };
