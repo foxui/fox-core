@@ -5783,7 +5783,6 @@ rivets.binders['class'] = function(el, value) {
            
            		$tmpl['rivets'] = rivets.bind($tmpl.get(0), this);
            
-            	var $data =  $(this).children('fox-json,fox-ajax').detach();
             	
             	var $children = $(this).children();
             	
@@ -5803,9 +5802,6 @@ rivets.binders['class'] = function(el, value) {
                     _$[$(this).attr('id')] = this;
                 });
                 this.$ = _$;
-                
-                $(this).append($data);
-                
                 $(this).append($tmpl.children());
             }
             
