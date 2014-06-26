@@ -1,5 +1,15 @@
 /**
  * 单页导航和多页导航处理
+ *
+ * A 标签上的属性：
+ *
+ * disable-pjax：如果有该属性表示禁止使用 ajax 导航功能；
+ * transition: 页面切换效果
+ * title: 页面标题
+ * fox-push-mode:
+ *     stack: always push new page
+ *     single: reuse existed page with the same href
+ *
  * TODO:
  * 1. 当页面导航到N页并直接刷新会导致前进、后退的判断失效
  * 因为浏览器的 state 记录和 stacks 的已经不同步的
@@ -13,6 +23,8 @@
     var fox = env.fox;
     var $ = env.$;
     var stacks = [];
+    var pageIDMap = {};
+    var id = 0;
     var backward = false;
     var mainPage = '.main-page';
     var indexTitle = document.title;
@@ -38,9 +50,10 @@
             var href = this.getAttribute('href');
             var title = this.getAttribute('title');
             var transition = this.getAttribute('transition');
+            var pushMode = this.getAttribute('fox-push-mode');
 
             if (href) {
-                me.navigate(href, title, transition);
+                me.navigate(href, title, transition, pushMode);
             }
         });
     }
@@ -88,7 +101,7 @@
             backward = false;
             outData = stacks[stacks.length-1];
             outPage = (outData && outData.page) || $(mainPage)[0];
-            inPage = preparePageDom(state.href, state.transition, state.title);
+            inPage = preparePageDom(state.href, state.transition, state.title, state.pushMode);
 
             stacks.push({href: state.href, page: inPage});
 
@@ -123,9 +136,8 @@
         }
     }
 
-    function preparePageDom(href, transition, title) {
+    function preparePageDom(href, transition, title, pushMode) {
         var page;
-
         transition = transition || nav.defaultTransition;
 
         // anchor
@@ -140,21 +152,34 @@
 
             page._anchor_ = true;
         }
-        // create new page
+        // reuse page or create new page
         else {
-            page = document.createElement('fox-page');
-            page.class = 'transition-out';
-            page.innerHTML =
-                '<fox-toolbar title="' + (title || '') + '">' +
-                    '<fox-icon icon="icon-left-nav" class="left" onclick="history.back();">' +
-                    '</fox-icon>' +
-                    '<fox-icon icon="icon-spin5" class="right animate-spin">' +
-                    '</fox-icon>' +
-                '</fox-toolbar>' +
-                '<fox-page-content></fox-page-content>';
-            document.body.appendChild(page);
 
-            new Linker(href, page);
+            if (pushMode === 'single') {
+                var pageId = pageIDMap[href];
+                page = fox.query(document, 'fox-page[fox-page-id="' + pageId + '"]')[0];
+            }
+
+            if (!page) {
+                page = document.createElement('fox-page');
+                page.class = 'transition-out';
+
+                pageIDMap[href] = (++id);
+                page.setAttribute('fox-page-id', id);
+
+                page.innerHTML =
+                    '<fox-toolbar title="' + (title || '') + '">' +
+                        // '<fox-icon icon="icon-left-nav" class="left" onclick="history.back();">' +
+                        // '</fox-icon>' +
+                        '<fox-icon icon="icon-spin5" class="right animate-spin">' +
+                        '</fox-icon>' +
+                    '</fox-toolbar>' +
+                    '<fox-page-content></fox-page-content>';
+                document.body.appendChild(page);
+
+                new Linker(href, page);
+            }
+
         }
 
         // set default transition
@@ -167,14 +192,13 @@
     }
 
     // Nav core code
-    // TODO: addd global default transition and transition switch config
     //===========================
     var nav = fox.navigator = {
         // global config - use animation
         animation: true,
 
         // global config - default transition effect
-        defaultTransition: 'hslide',
+        defaultTransition: 'display',
 
         start: function() {
 
@@ -195,7 +219,7 @@
                 var state = history.state;
 
                 if (state) {
-                    var inPage = preparePageDom(state.href, state.transition, state.title);
+                    var inPage = preparePageDom(state.href, state.transition, state.title, state.pushMode);
                     var outPage = $(mainPage)[0];
 
                     stacks.push({href: state.href, page: inPage});
@@ -206,8 +230,13 @@
             }
         },
 
-        navigate: function(href, title, transition) {
-            var inPage = preparePageDom(href, transition, title);
+        navigate: function(href, title, transition, pushMode) {
+
+            if( history.state && history.state.href === href) {
+                return;
+            }
+
+            var inPage = preparePageDom(href, transition, title, pushMode);
             var outPage;
 
             // query current page
@@ -226,7 +255,15 @@
 
             inPage && inPage.show(nav.animation);
 
-            history.pushState({href:href, transition: transition, title: title}, title, href);
+            history.pushState({
+                    href:href,
+                    transition: transition,
+                    title: title,
+                    pushMode: pushMode
+                },
+                title,
+                href
+            );
 
             title && (document.title = title);
 
@@ -237,6 +274,151 @@
     // To load, parse and insert the linking page
     // =========================================
 
+    // resolve relative path to absolute path
+    function resolvePath(relPath, curPath) {
+        var url = location;
+
+        // TODO:
+        // window.URL is not supported well in mobile, replace with polyfill
+        if (curPath) {
+            url = new (window.URL || window.webkitURL)(curPath);
+        }
+
+        // ignore absolute path
+        if (/^(http\:|https\:)/.test(relPath)) {
+            return relPath;
+        }
+
+        var host = url.hostname;
+        var paths = url.pathname.split('/');
+        var relPaths = relPath.split('/');
+        var protocol = url.protocol;
+
+        paths.pop();
+
+        while(relPaths.length) {
+            var part = relPaths.shift();
+
+            if (part === '..') {
+                paths.pop();
+            }
+            else if(part && part !== '.') {
+                paths.push(part);
+            }
+        }
+
+        return protocol + '//' + host + paths.join('/');
+    }
+
+    function parsePage(pagePath, content) {
+
+        // existed sources
+        var existedScripts = fox.query(document, 'script[src]');
+        var existedScriptPaths = [];
+
+        existedScripts.forEach(function(script){
+            existedScriptPaths.push(resolvePath(script.src, pagePath));
+        });
+
+        // TODO:
+        // add recursively query
+        var existedImports = fox.query(document, 'link[rel=import]');
+        var existedImportPaths = [];
+
+        existedImports.forEach(function(link){
+            existedImportPaths.push(resolvePath(link.href, pagePath));
+        });
+
+        // TODO:
+        // add inline style parse
+        var existedStyles = fox.query(document, 'link[rel=stylesheet]');
+        var existedStylePaths = [];
+
+        existedStyles.forEach(function(link){
+            existedStylePaths.push(resolvePath(link.href, pagePath));
+        });
+
+        // source in content
+        function linkRegexp(type) {
+            return new RegExp('<link[^>]*? rel=(?:\'|")' + type + '(?:\'|")[^>]*? href=(?:\'|")(.+?)(?:\'|")[^>]*?>', 'g');
+        }
+
+        var rImport = linkRegexp('import');
+        // var rStyle = linkRegexp('stylesheet');
+
+        // 清除重复的tag import，防止重复加载
+        content = content.replace(rImport, function(match, href) {
+            var path = resolvePath(href, pagePath);
+
+            if (existedImportPaths.indexOf(path) > -1) {
+                return '';
+            }
+            else {
+                return match;
+            }
+        });
+
+        //scripts in content
+        var scripts = [];
+
+        //styles in content
+        var styles = [];
+
+        if (/<html/i.test(content)) {
+            head = document.createElement('div');
+            body = document.createElement('div');
+            head.innerHTML = content.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0];
+            body.innerHTML = content.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0];
+
+        // Page fragment
+        } else {
+            head = body = document.createElement('div');
+            head.innerHTML = content;
+        }
+
+        scripts = scripts.concat(fox.query(head, 'script'));
+        scripts = scripts.concat(fox.query(body, 'script'));
+
+        styles = styles.concat(fox.query(head, 'link[rel="stylesheet"]'));
+        styles = styles.concat(fox.query(body, 'link[rel="stylesheet"]'));
+
+        var scriptsToLoad = [];
+
+        scripts.forEach(function(script) {
+            if ((!script.type || (script.type.toLowerCase() == 'text/javascript'))) {
+                if (script.src
+                    && existedScriptPaths.indexOf(resolvePath(script.src, pagePath)) === -1 ) {
+                    scriptsToLoad.push(script);
+                }
+                else if (!script.src) {
+                    scriptsToLoad.push(script);
+                }
+            }
+        });
+
+        var stylesToLoad = [];
+
+        styles.forEach(function(style) {
+            if (style.href
+                && existedStylePaths.indexOf(resolvePath(style.href, pagePath)) === -1 ) {
+                stylesToLoad.push(style);
+            }
+        });
+
+        // parse and set title
+        title = head.querySelector('title');
+        var text = 'innerText' in title ? 'innerText' : 'textContent';
+        title = title && title[text].trim();
+
+        return {
+            title: title,
+            scripts: scriptsToLoad,
+            styles: stylesToLoad,
+            head: head,
+            body: body
+        }
+    }
+
     function Linker(href, placeholder, timeout) {
 
         if (!href || !placeholder) {
@@ -245,6 +427,7 @@
 
         this.placeholder = placeholder;
         this.timeout = timeout;
+        this.href = resolvePath(href);
 
         this.request(href);
     }
@@ -301,37 +484,65 @@
                 var title;
                 var page;
                 var responseText = this.xhr.responseText;
+                var me = this;
 
                 if (!responseText) {
                     return
                 }
 
-                // Complete page
-                if (/<html/i.test(responseText)) {
-                    head = document.createElement('div');
-                    body = document.createElement('div');
-                    head.innerHTML = responseText.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0];
-                    body.innerHTML = responseText.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0];
+                var pageData = parsePage(this.href, responseText);
 
-                // Page fragment
-                } else {
-                    head = body = document.createElement('div');
-                    head.innerHTML = responseText;
+                if (pageData) {
+                    pageData.title && (document.title = pageData.title);
+
+                    // load styles in need
+                    if (pageData.styles.length) {
+                        pageData.styles.forEach(function(style){
+                            if (style.href) {
+                                var s = document.createElement('link');
+                                s.rel = 'stylesheet';
+                                s.href = resolvePath(style.href, me.href);;
+                                document.head.appendChild(s);
+                            }
+                        });
+                    }
+
+                    // replace placeholder
+                    page = pageData.body.querySelector('fox-page');
+
+                    if (page && me.placeholder.parentNode) {
+                        me.placeholder.innerHTML = page.innerHTML;
+
+                        // copy attributes
+                        fox.toArray(page.attributes).forEach(function(attr) {
+                            if (attr.name !== 'class') {
+                                me.placeholder.setAttribute(attr.name, attr.value);
+                            }
+                        });
+
+                        fox.toArray(page.classList).forEach(function(cls){
+                            if (('.' + cls) !== mainPage) {
+                                me.placeholder.classList.add(cls);
+                            }
+                        });
+                    }
+
+                    // load script in need
+                    if (pageData.scripts.length) {
+                        pageData.scripts.forEach(function(script){
+                            if (!script.src) {
+                                ( window.execScript || function( data ) {
+                                    window[ 'eval' ].call( window, data );
+                                } )( script.textContent );
+                            }
+                            else {
+                                var s = document.createElement('script');
+                                s.src = resolvePath(script.src, me.href);
+                                document.head.appendChild(s);
+                            }
+                        });
+                    }
                 }
-
-                // parse and set title
-                title = head.querySelector('title');
-                var text = 'innerText' in title ? 'innerText' : 'textContent';
-                title = title && title[text].trim();
-
-                title && (document.title = title);
-
-                // replace placeholder
-                page = body.querySelector('fox-page');
-
-                page &&
-                this.placeholder.parentNode &&
-                (this.placeholder.innerHTML = page.innerHTML);
             },
 
             failure: function() {
@@ -341,6 +552,8 @@
     })();
 
 
+    // TODO:
+    // 存在隐患，如果这段JS在事件触发之后执行的话将导致代码不会运行，应该统一注册方法并检测Imports状态
     document.addEventListener('HTMLImportsLoaded', function(){
         nav.start();
 
