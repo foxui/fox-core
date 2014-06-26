@@ -5528,301 +5528,139 @@ for (z in UIEventProto){
 
 })();
 
-/**
- * @fileoverview fox命名空间
- */
+// Copyright 2013 Erik Arvidsson
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+(function() {
 
-(function(env) {
+  if (window.URL && window.URL.prototype && ('href' in window.URL.prototype))
+    return;
 
-	if (env.fox) {
-		return;
-	}
+  function URL(url, base) {
+    if (!url)
+      throw new TypeError('Invalid argument');
 
-	var vendor = env.xtag;
-
-	var fox = env.fox = function() {
-		return fox.fn && fox.fn.apply(this, arguments);
-	};
-
-	fox.fn = function(tagName, options, parent) {
-		return fox.fn.register(tagName, options);
-	};
-
-})(this);
-
-rivets.binders['background-image'] = function(el, value) {
-	el.style["backgroundImage"] = "url(" + value + ")";
-};
-
-rivets.binders['class'] = function(el, value) {
-
-	var elClass;
-	elClass = " " + el.className + " ";
-	if (!value === (elClass.indexOf(" " + value + " ") !== -1)) {
-		return el.className = value ? "" + el.className + " " + value : elClass.replace(" " + value + " ", ' ').trim();
-	}
-}; 
-(function( env ) {
-
-    var undefined;
-
-    var fox = env.fox;
-    var vendor = env.xtag;
-
-    fox.mixin = function(target, source) {
-        for (var key in source) {
-
-            if (source[key] !== undefined) {
-                target[key] = source[key];
-            }
-
-        }
-    };
-
-
-    fox.query = function(el, selector) {
-        return vendor.query(el, selector);
+    var doc = document.implementation.createHTMLDocument('');
+    if (base) {
+      var baseElement = doc.createElement('base');
+      baseElement.href = base;
+      doc.head.appendChild(baseElement);
     }
+    var anchorElement = doc.createElement('a');
+    anchorElement.href = url;
+    doc.body.appendChild(anchorElement);
 
-    fox.queryChildren = function(el, selector) {
-        return vendor.queryChildren(el, selector);
+    if (anchorElement.protocol === ':' || !/:/.test(anchorElement.href))
+      throw new TypeError('Invalid URL');
+
+    Object.defineProperty(this, '_anchorElement', {value: anchorElement});
+  }
+
+  URL.prototype = {
+    toString: function() {
+      return this.href;
+    },
+
+    get href() {
+      return this._anchorElement.href;
+    },
+    set href(value) {
+      this._anchorElement.href = value;
+    },
+
+    get protocol() {
+      return this._anchorElement.protocol;
+    },
+    set protocol(value) {
+      this._anchorElement.protocol = value;
+    },
+
+    // NOT IMPLEMENTED
+    // get username() {
+    //   return this._anchorElement.username;
+    // },
+    // set username(value) {
+    //   this._anchorElement.username = value;
+    // },
+
+    // get password() {
+    //   return this._anchorElement.password;
+    // },
+    // set password(value) {
+    //   this._anchorElement.password = value;
+    // },
+
+    // get origin() {
+    //   return this._anchorElement.origin;
+    // },
+
+    get host() {
+      return this._anchorElement.host;
+    },
+    set host(value) {
+      this._anchorElement.host = value;
+    },
+
+    get hostname() {
+      return this._anchorElement.hostname;
+    },
+    set hostname(value) {
+      this._anchorElement.hostname = value;
+    },
+
+    get port() {
+      return this._anchorElement.port;
+    },
+    set port(value) {
+      this._anchorElement.port = value;
+    },
+
+    get pathname() {
+      return this._anchorElement.pathname;
+    },
+    set pathname(value) {
+      this._anchorElement.pathname = value;
+    },
+
+    get search() {
+      return this._anchorElement.search;
+    },
+    set search(value) {
+      this._anchorElement.search = value;
+    },
+
+    get hash() {
+      return this._anchorElement.hash;
+    },
+    set hash(value) {
+      this._anchorElement.hash = value;
     }
+  };
 
-    fox.bind = function(fn, context) {
+  var oldURL = window.URL || window.webkitURL || window.mozURL;
 
-        if (typeof fn.bind === 'function') {
-            return fn.bind(context);
-        }
+  URL.createObjectURL = function(blob) {
+    return oldURL.createObjectURL.apply(oldURL, arguments);
+  };
 
-        return function() {
-            return fn.apply(context, arguments);
-        };
-    }
+  URL.revokeObjectURL = function(url) {
+    return oldURL.revokeObjectURL.apply(oldURL, arguments);
+  };
 
-    fox.fireEvent = function(el, type, data) {
-        return vendor.fireEvent(el, type, data);
-    }
+  Object.defineProperty(URL.prototype, 'toString', {enumerable: false});
 
-    fox.addEvent = function(el, event, callback) {
-        return vendor.addEvent(el, event, callback);
-    }
-
-    fox.addEvents = function(el, events) {
-        return vendor.addEvents(el, events);
-    }
-
-    fox.toArray = function(arrayLikeObject) {
-        return Array.prototype.slice.call(arrayLikeObject);
-    }
-
-})(this);
-
-(function( env ) {
-
-    var fox = env.fox;
-
-    fox.debug = true;
-
-    fox.log = function(msg, type) {
-        if (!fox.debug || !('console' in env)) {
-            return;
-        }
-
-        console.log(msg);
-    };
-
-})(this);
-
-(function( env ) {
-
-    var undefined;
-
-    var fox = env.fox;
-
-    fox.fn.extendTag = function (tagName, options, parent) {
-        var originCreated;
-        var lifecycle = options.lifecycle || (options.lifecycle = {});
-        var parentInst = document.createElement(parent);
-        var proto = parentInst.__proto__ || Object.getPrototypeOf(parentInst);
-
-        // change prototype
-        options.prototype = proto;
-
-        if (lifecycle.created) {
-            originCreated = lifecycle.created;
-        }
-
-        options.lifecycle.created = function() {
-            //take parent's created callback as constructor
-            proto.createdCallback.apply(this, arguments);
-
-            // $super
-            this.$super = proto;
-
-            originCreated && originCreated.apply(this, arguments);
-        }
-    };
-
-})(this);
-
-(function(env) {
-
-	var undefined;
-
-	var fox = env.fox;
-
-	function getTplAndAttribute(el) {
-		
-		var tpl = el.querySelector('tpl');
-		var meta = {
-			tmpl: null,
-			attributes: [],
-			extends: null
-		};
-
-		if (tpl) {
-			meta['tmpl'] = tpl;
-		}
-
-		meta['extends'] =  el.getAttribute('extends');
-
-		var attributes = el.getAttribute('attributes');
-		meta['attributes'] = attributes && attributes.split(' ') || [];
-
-		return meta;
-	}
-	
-	function getImportLinks(doc,arr){
-	 	var links = doc.querySelectorAll('link[rel="import"]');
-	 	for(var i = 0;i<links.length;i++){
-	 		var link = links[i];
-	 		arr.push(link);
-	 		getImportLinks(link.import,arr);
-	 	}
-	}
-
-    // TODO: 目前只解析以 <link rel="import"/> 方式载入的标签定义，需要增加对于 inline 以及 innerHTML 的解析
-	function getOwnTplAndAttribute(elementName) {
-		var links = [];
-		getImportLinks(document,links);
-		// var links = document.querySelectorAll('link[rel="import"]');
-		
-		var foxuiEl;
-
-		for (var i = 0; i < links.length; i++) {
-			var link = links[i];
-			var foxui = link.import.querySelector(
-                'fox-element[name="' + elementName + '"]');
-
-			if (foxui) {
-				foxuiEl = foxui;
-				break;
-			}
-		}
-
-		var result = {};
-
-		if (foxuiEl) {
-			result = getTplAndAttribute(foxuiEl);
-
-		}
-
-		return result;
-	}
-
-	var registerArr = [];
-
-	function register(elementName, option) {
-		window.addEventListener('HTMLImportsLoaded', function(e) {
-			if (registerArr.indexOf(elementName) == -1) {
-				_register(elementName, option);
-				registerArr.push(elementName);
-			}
-	        else {
-	            throw new Error( elementName + ' already defined.' );
-	        }
-		},true);
-
-
-	}
-
-	function _register(elementName, option) {
-
-		var own = getOwnTplAndAttribute(elementName);
-
-        option = option || {};
-
-        if (!option.lifecycle) {
-            option.lifecycle = {};
-        }
-
-        // 扩展数据源支持
-        fox.fn.datasource(option);
-
-		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
-
-		option.accessors = option.accessors || {};
-
-
-		own['attributes'] && own['attributes'].forEach(function(v) {
-			option.accessors[v] = {
-				attribute : true
-			}
-		});
-
-        var originCreated = option.lifecycle.created;
-
-        var originAttrChange = option.lifecycle.attributeChanged;
-		
-        option.lifecycle.created = function() {
-            var self = this;
-
-            if(own['tmpl']){
-            	
-            	var $tmpl = $(own['tmpl']).clone(true);
-           
-           		$tmpl['rivets'] = rivets.bind($tmpl.get(0), this);
-           
-            	
-            	var $children = $(this).children();
-            	
-                $('content', $tmpl).replaceWith($children);
-                
-                
-                
-                $(this).empty();
-                
-				$('fox-tmpl',$tmpl).each(function(){
-					rivets.bind(this, this);
-				});
-				
-                var _$ = {};
-
-                $('[id]', $tmpl).each(function() {
-                    _$[$(this).attr('id')] = this;
-                });
-                this.$ = _$;
-                $(this).append($tmpl.children());
-            }
-            
-            
- 			
-
-            originCreated && originCreated.apply(this, arguments);
-        };
-
-        option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
-        	var attrChangeFn = option.lifecycle[attr+'Changed'];
-        	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
-        	originAttrChange && originAttrChange.apply(this, arguments);
-        }
-
-		xtag.register(elementName, option);
-	}
-
-
-	fox.fn.register = register;
-})(this);
+  window.URL = URL;
+})();
 
 /*
  * Copyright 2013 The Polymer Authors. All rights reserved.
@@ -6784,6 +6622,302 @@ if (!HTMLImports.useNative) {
 }
 
 })();
+
+/**
+ * @fileoverview fox命名空间
+ */
+
+(function(env) {
+
+	if (env.fox) {
+		return;
+	}
+
+	var vendor = env.xtag;
+
+	var fox = env.fox = function() {
+		return fox.fn && fox.fn.apply(this, arguments);
+	};
+
+	fox.fn = function(tagName, options, parent) {
+		return fox.fn.register(tagName, options);
+	};
+
+})(this);
+
+rivets.binders['background-image'] = function(el, value) {
+	el.style["backgroundImage"] = "url(" + value + ")";
+};
+
+rivets.binders['class'] = function(el, value) {
+
+	var elClass;
+	elClass = " " + el.className + " ";
+	if (!value === (elClass.indexOf(" " + value + " ") !== -1)) {
+		return el.className = value ? "" + el.className + " " + value : elClass.replace(" " + value + " ", ' ').trim();
+	}
+}; 
+(function( env ) {
+
+    var undefined;
+
+    var fox = env.fox;
+    var vendor = env.xtag;
+
+    fox.mixin = function(target, source) {
+        for (var key in source) {
+
+            if (source[key] !== undefined) {
+                target[key] = source[key];
+            }
+
+        }
+    };
+
+
+    fox.query = function(el, selector) {
+        return vendor.query(el, selector);
+    }
+
+    fox.queryChildren = function(el, selector) {
+        return vendor.queryChildren(el, selector);
+    }
+
+    fox.bind = function(fn, context) {
+
+        if (typeof fn.bind === 'function') {
+            return fn.bind(context);
+        }
+
+        return function() {
+            return fn.apply(context, arguments);
+        };
+    }
+
+    fox.fireEvent = function(el, type, data) {
+        return vendor.fireEvent(el, type, data);
+    }
+
+    fox.addEvent = function(el, event, callback) {
+        return vendor.addEvent(el, event, callback);
+    }
+
+    fox.addEvents = function(el, events) {
+        return vendor.addEvents(el, events);
+    }
+
+    fox.toArray = function(arrayLikeObject) {
+        return Array.prototype.slice.call(arrayLikeObject);
+    }
+
+})(this);
+
+(function( env ) {
+
+    var fox = env.fox;
+
+    fox.debug = true;
+
+    fox.log = function(msg, type) {
+        if (!fox.debug || !('console' in env)) {
+            return;
+        }
+
+        console.log(msg);
+    };
+
+})(this);
+
+(function( env ) {
+
+    var undefined;
+
+    var fox = env.fox;
+
+    fox.fn.extendTag = function (tagName, options, parent) {
+        var originCreated;
+        var lifecycle = options.lifecycle || (options.lifecycle = {});
+        var parentInst = document.createElement(parent);
+        var proto = parentInst.__proto__ || Object.getPrototypeOf(parentInst);
+
+        // change prototype
+        options.prototype = proto;
+
+        if (lifecycle.created) {
+            originCreated = lifecycle.created;
+        }
+
+        options.lifecycle.created = function() {
+            //take parent's created callback as constructor
+            proto.createdCallback.apply(this, arguments);
+
+            // $super
+            this.$super = proto;
+
+            originCreated && originCreated.apply(this, arguments);
+        }
+    };
+
+})(this);
+
+(function(env) {
+
+	var undefined;
+
+	var fox = env.fox;
+
+	function getTplAndAttribute(el) {
+		
+		var tpl = el.querySelector('tpl');
+		var meta = {
+			tmpl: null,
+			attributes: [],
+			extends: null
+		};
+
+		if (tpl) {
+			meta['tmpl'] = tpl;
+		}
+
+		meta['extends'] =  el.getAttribute('extends');
+
+		var attributes = el.getAttribute('attributes');
+		meta['attributes'] = attributes && attributes.split(' ') || [];
+
+		return meta;
+	}
+	
+	function getImportLinks(doc,arr){
+	 	var links = doc.querySelectorAll('link[rel="import"]');
+	 	for(var i = 0;i<links.length;i++){
+	 		var link = links[i];
+	 		arr.push(link);
+	 		getImportLinks(link.import,arr);
+	 	}
+	}
+
+    // TODO: 目前只解析以 <link rel="import"/> 方式载入的标签定义，需要增加对于 inline 以及 innerHTML 的解析
+	function getOwnTplAndAttribute(elementName) {
+		var links = [];
+		getImportLinks(document,links);
+		// var links = document.querySelectorAll('link[rel="import"]');
+		
+		var foxuiEl;
+
+		for (var i = 0; i < links.length; i++) {
+			var link = links[i];
+			var foxui = link.import.querySelector(
+                'fox-element[name="' + elementName + '"]');
+
+			if (foxui) {
+				foxuiEl = foxui;
+				break;
+			}
+		}
+
+		var result = {};
+
+		if (foxuiEl) {
+			result = getTplAndAttribute(foxuiEl);
+
+		}
+
+		return result;
+	}
+
+	var registerArr = [];
+
+	function register(elementName, option) {
+		window.addEventListener('HTMLImportsLoaded', function(e) {
+			if (registerArr.indexOf(elementName) == -1) {
+				_register(elementName, option);
+				registerArr.push(elementName);
+			}
+	        else {
+	            throw new Error( elementName + ' already defined.' );
+	        }
+		},true);
+
+
+	}
+
+	function _register(elementName, option) {
+
+		var own = getOwnTplAndAttribute(elementName);
+
+        option = option || {};
+
+        if (!option.lifecycle) {
+            option.lifecycle = {};
+        }
+
+        // 扩展数据源支持
+        fox.fn.datasource(option);
+
+		own['extends'] &&  fox.fn.extendTag(elementName, option, own['extends']);
+
+		option.accessors = option.accessors || {};
+
+
+		own['attributes'] && own['attributes'].forEach(function(v) {
+			option.accessors[v] = {
+				attribute : true
+			}
+		});
+
+        var originCreated = option.lifecycle.created;
+
+        var originAttrChange = option.lifecycle.attributeChanged;
+		
+        option.lifecycle.created = function() {
+            var self = this;
+
+            if(own['tmpl']){
+            	
+            	var $tmpl = $(own['tmpl']).clone(true);
+           
+           		$tmpl['rivets'] = rivets.bind($tmpl.get(0), this);
+           
+            	
+            	var $children = $(this).children();
+            	
+                $('content', $tmpl).replaceWith($children);
+                
+                
+                
+                $(this).empty();
+                
+				$('fox-tmpl',$tmpl).each(function(){
+					rivets.bind(this, this);
+				});
+				
+                var _$ = {};
+
+                $('[id]', $tmpl).each(function() {
+                    _$[$(this).attr('id')] = this;
+                });
+                this.$ = _$;
+                $(this).append($tmpl.children());
+            }
+            
+            
+ 			
+
+            originCreated && originCreated.apply(this, arguments);
+        };
+
+        option.lifecycle.attributeChanged = function(attr, oldVal, newVal) {
+        	var attrChangeFn = option.lifecycle[attr+'Changed'];
+        	attrChangeFn&&attrChangeFn.call(this,oldVal, newVal);
+        	originAttrChange && originAttrChange.apply(this, arguments);
+        }
+
+		xtag.register(elementName, option);
+	}
+
+
+	fox.fn.register = register;
+})(this);
 
 /**
  * 单页导航和多页导航处理
