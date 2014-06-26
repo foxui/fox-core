@@ -4,11 +4,11 @@
         <meta charset="utf-8">
         <title>Demo of datasource</title>
         <script src="../../dist/foxui.js"></script>
-        <script src="../../src/register.js"></script>
         <link rel="import" href="fox-json.html"/>
         <link rel="import" href="fox-foo.html"/>
         <link rel="import" href="fox-bar.html"/>
         <link rel="import" href="fox-baz.html"/>
+        <link rel="import" href="../../../fox-template/dist/fox-template.html"/>
         <style>
             body{
                 margn: 20px;
@@ -99,18 +99,20 @@
 
         <label>remaining:</label><input type="range" maximum="500" minimum="0" onchange="auction.auction.remaining=this.value">
 
-        <fox-baz sourceSelector="@auction">
-            <section id="auction">
-              <h1>{ data.action.title }</h1>
-              <img rv-src="data.action.image.url">
+        <fox-baz>
+            <fox-template sourceSelector="@auction">
+                <section id="auction">
+                  <h1>{ data.action.title }</h1>
+                  <img rv-src="data.action.image.url">
 
-              <aside rv-show='data.auction.remaining | lt 120'>
-                <h4>Hurry up!<h4>
-                <p>This auction is ending in { data.auction.remaining | time }.</p>
-              </aside>
+                  <aside rv-show='data.auction.remaining | lt 120'>
+                    <h4>Hurry up!<h4>
+                    <p>This auction is ending in { data.auction.remaining | time }.</p>
+                  </aside>
 
-              <button rv-on-click="data.controller.bid">Place a bid</button>
-            </section>
+                  <button rv-on-click="data.controller.bid">Place a bid</button>
+                </section>
+            </fox-template>
         </fox-baz>
     </body>
 </html>

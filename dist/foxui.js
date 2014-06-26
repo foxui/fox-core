@@ -7409,10 +7409,21 @@ if (!HTMLImports.useNative) {
      * </fox-element>
      */
     function parseDataSource() {
-        var ss = this.getAttribute('sourceSelector');
+        var ss = this.sourceselector;
         var isGlobalData = ss && (ss.indexOf('@') === 0);
         var targetDom = ss && !isGlobalData;
         var me = this;
+
+        // clear listener
+        if (this._callbackTargetDataTag) {
+            document.removeEventListener(
+                'data-change', this._callbackTargetDataTag, false);
+        }
+
+        if (this._callbackInnerDataTag) {
+            this.removeEventListener(
+                'data-change', this._callbackInnerDataTag, false);
+        }
 
         // 全局数据是立即读取的，因此要求数据存在于组件创建之前
         if (isGlobalData) {
@@ -7420,6 +7431,21 @@ if (!HTMLImports.useNative) {
             this.data = eval(ss.substring(1));
         }
         else if(targetDom) {
+
+            if (!this._callbackTargetDataTag) {
+
+                this._callbackTargetDataTag = fox.bind(function(e){
+
+                    // layzy query: 可以不依赖数据源结点的生成时机
+                    var targets = fox.toArray(
+                        document.querySelectorAll(this.sourceselector)
+                    );
+
+                    if (targets.indexOf(e.target) > -1) {
+                        this.data = e.detail.newVal;
+                    }
+                }, this);
+            }
 
             // 当数据结点已创建完成时(只取第一个数据源结点)
             var dataEl = fox.query(document, ss)[0];
@@ -7429,15 +7455,7 @@ if (!HTMLImports.useNative) {
             }
 
             // 当数据结点未创建或者后续数据变更时(实际上允许多个数据源，但和初始时不一致)
-            document.addEventListener('data-change', function(e){
-
-                // layzy query: 可以不依赖数据源结点的生成时机
-                var targets = fox.toArray(document.querySelectorAll(ss));
-
-                if (targets.indexOf(e.target) > -1) {
-                    me.data = e.detail.newVal;
-                }
-            }, false);
+            document.addEventListener('data-change', this._callbackTargetDataTag, false);
         }
 
         // 监听内部 data-change(过滤掉非直接子结点数据源元素)
@@ -7451,12 +7469,19 @@ if (!HTMLImports.useNative) {
                 this.data = dataEl.data;
             }
 
+            if (!this._callbackInnerDataTag) {
+
+                this._callbackInnerDataTag = fox.bind(function(e){
+
+                    if (e.target.parentNode === this) {
+                        this.data = e.detail.newVal;
+                    }
+
+                }, this);
+            }
+
             // 当数据结点未创建或者后续数据变更时(实际上允许多个数据源，但和初始时不一致)
-            this.addEventListener('data-change', function(e){
-                if (e.target.parentNode === me) {
-                    me.data = e.detail.newVal;
-                }
-            }, false);
+            this.addEventListener('data-change', this._callbackInnerDataTag, false);
         }
     }
 
@@ -7486,6 +7511,18 @@ if (!HTMLImports.useNative) {
         }
 
         dataSetterGetter(options);
+
+        options.accessors = options.accessors || {};
+
+        options.accessors.sourceselector = {
+            attribute: true
+        };
+
+        lifecycle.sourceselectorChanged = function() {
+            if (dataTags.indexOf(this.tagName) === -1) {
+                parseDataSource.call(this);
+            }
+        }
 
         options.lifecycle.created = function() {
             if (dataTags.indexOf(this.tagName) === -1) {
