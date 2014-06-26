@@ -31,6 +31,7 @@
 
     var fox = env.fox;
     var dataTags = ['fox-json', 'fox-ajax'];
+    var dataContainerTags = ['fox-model'];
     var callback = 'datasourceChanged';
     var dataFilter = 'datasourceFilter';
 
@@ -90,7 +91,7 @@
             // 元素创建顺序决定于元素文件的载入顺序，因此在创建时内部结点的状态是不确定的
 
             // 当数据结点已创建完成时(只取第一个数据源结点)
-            var dataEl = fox.queryChildren(this, dataTags.join())[0];
+            var dataEl = fox.queryChildren(this, (dataTags.concat(dataContainerTags)).join())[0];
 
             if (dataEl && dataEl.data) {
                 this.data = dataEl.data;
