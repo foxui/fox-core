@@ -140,6 +140,22 @@
   background-repeat: no-repeat;
 }
 
+@mixin scrollable($dir) {
+    display: block;
+    -webkit-overflow-scrolling: touch;
+
+    @if $dir == x {
+        overflow-x: auto;
+        overflow-y: hidden;
+    } @else if $dir == y {
+        overflow-x: hidden;
+        overflow-y: auto;
+    } @else if $dir == xy{
+        overflow: auto;
+    }
+
+}
+
 // Flex Layout
 // --------------------------------------------------
 @mixin flex-column-container(){
