@@ -3,10 +3,12 @@ rivets.binders['background-image'] = function(el, value) {
 };
 
 rivets.binders['class'] = function(el, value) {
-
-	var elClass;
-	elClass = " " + el.className + " ";
-	if (!value === (elClass.indexOf(" " + value + " ") !== -1)) {
-		return el.className = value ? "" + el.className + " " + value : elClass.replace(" " + value + " ", ' ').trim();
+	
+	if(el._rivetCls){
+		$(el).removeClass(el._rivetCls);
 	}
+	$(el).addClass(value);
+	
+	el._rivetCls = value;
+	
 }; 
