@@ -4,9 +4,9 @@
 
 // Use box sizing on all the things!
 * {
-        -webkit-box-sizing: border-box;
-           -moz-box-sizing: border-box;
-                box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -16,18 +16,18 @@ html {
 }
 
 body {
-  font-family: $font-family-default;
-  font-size: $font-size-default;
-  line-height: $line-height-default;
-  color: #000;
-  background-color: #efeff4;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+    font-family: $font-family-default;
+    font-size: $font-size-default;
+    line-height: $line-height-default;
+    color: #000;
+    background-color: #efeff4;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 * {
@@ -39,32 +39,32 @@ body {
 
 // bars' base style
 .bar{
-  position: relative;
-  top:0;
-  left:0;
-  padding: 0;
-  margin: 0;
-  cursor: default;
-  height: $bar-base-height;
-  width: 100%;
-  background: #f8f8f8;
-  color: #1f1f21;
-  border-bottom: 1px solid #ddd;
-  font-weight: 400;
-  display: block;
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  white-space: nowrap;
-  overflow: hidden;
-  word-spacing: 0;
+    position: relative;
+    top:0;
+    left:0;
+    padding: 0;
+    margin: 0;
+    cursor: default;
+    height: $bar-base-height;
+    width: 100%;
+    background: #f8f8f8;
+    color: #1f1f21;
+    border-bottom: 1px solid #ddd;
+    font-weight: 400;
+    display: block;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    white-space: nowrap;
+    overflow: hidden;
+    word-spacing: 0;
 
-  &.bottom{
-    border-bottom:none;
-    border-top: 1px solid #ddd;
-  }
+    &.bottom{
+        border-bottom:none;
+        border-top: 1px solid #ddd;
+    }
 
-  @include user-select(none);
-  @include box-shadow(none);
+    @include user-select(none);
+    @include box-shadow(none);
 }
 
 // Global Top Toolbar
@@ -95,12 +95,19 @@ body > fox-tabbar.bar.bottom ~ fox-page{
 
 // Universal link styling
 a {
-  color: $primary-color;
-  text-decoration: none;
+    color: $primary-color;
+    text-decoration: none;
 
-  &:active {
-    // color: darken($primary-color, 10%);
-  }
+    &:active {
+        // color: darken($primary-color, 10%);
+    }
+}
+
+// Disabled style
+[disabled] {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
 }
 
 // Wrapper to be used around all content not in .bar-title and .bar-tab
@@ -148,14 +155,14 @@ a {
 
 // Utility classes
 .content-padded {
-  margin: $bar-side-spacing;
+    margin: $bar-side-spacing;
 }
 .pull-left {
-  float: left;
+    float: left;
 }
 .pull-right {
-  float: right;
+    float: right;
 }
 .clearfix {
-  @include clearfix();
+    @include clearfix();
 }

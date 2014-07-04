@@ -317,6 +317,12 @@ a {
   text-decoration: none;
 }
 
+[disabled] {
+  pointer-events: none;
+  cursor: default;
+  opacity: .3;
+}
+
 .content-padded {
   margin: 10px;
 }
