@@ -111,11 +111,12 @@
 
         if (outPage) {
 
-            // clear out page after transtion end
-            // fade is the default tranistion
-            // if (outPage.transition) {
-
-                // only remove the out page in backward direction
+            // only remove the out page in backward direction
+            if (backward && !animation) {
+                clearPage(outPage);
+            }
+            else {
+                // backward and animate
                 if (backward) {
                     function transitionEnd(){
                         outPage.removeEventListener('transitionend', transitionEnd, false);
@@ -125,10 +126,7 @@
                 }
 
                 outPage.hide(animation, backward);
-            // }
-            // else if(backward){
-                // clearPage(outPage);
-            // }
+            }
         }
 
         if (inPage) {
@@ -310,7 +308,15 @@
         return protocol + '//' + host + paths.join('/');
     }
 
+    /**
+     * 默认规则：在使用 ajax 导航的情况下，一个页面应该只有一个 fox-page
+     */
     function parsePage(pagePath, content) {
+        var head;
+        var body;
+        var bodyHTML;
+        var pageHTML;
+        var title;
 
         // existed sources
         var existedScripts = fox.query(document, 'script[src]');
@@ -364,17 +370,27 @@
         //styles in content
         var styles = [];
 
+        var rPage = /(<fox-page[^>]*>)([\s\S.]*)(<\/fox-page>)/i;
+
         if (/<html/i.test(content)) {
             head = document.createElement('div');
             body = document.createElement('div');
+            bodyHTML = content.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0];
             head.innerHTML = content.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0];
-            body.innerHTML = content.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0];
 
         // Page fragment
         } else {
             head = body = document.createElement('div');
-            head.innerHTML = content;
+            bodyHTML = content;
         }
+
+        pageHTML = (bodyHTML.match(rPage)||[])[2];
+
+        // 仅将 fox-page 之外的内容放入临时 div 查找
+        // 因为 fox-page 的渲染成本比较高
+        body.innerHTML = bodyHTML.replace(rPage, function(match, start, html, end) {
+            return start + end;
+        });
 
         scripts = scripts.concat(fox.query(head, 'script'));
         scripts = scripts.concat(fox.query(body, 'script'));
@@ -415,7 +431,8 @@
             scripts: scriptsToLoad,
             styles: stylesToLoad,
             head: head,
-            body: body
+            body: body,
+            page: pageHTML
         }
     }
 
@@ -479,10 +496,8 @@
 
             success: function() {
                 // parse response
-                var head;
-                var body;
-                var title;
                 var page;
+                var pageHTML;
                 var responseText = this.xhr.responseText;
                 var me = this;
 
@@ -508,10 +523,11 @@
                     }
 
                     // replace placeholder
+                    pageHTML = pageData.page;
                     page = pageData.body.querySelector('fox-page');
 
                     if (page && me.placeholder.parentNode) {
-                        me.placeholder.innerHTML = page.innerHTML;
+                        me.placeholder.innerHTML = pageHTML;
 
                         // copy attributes
                         fox.toArray(page.attributes).forEach(function(attr) {

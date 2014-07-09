@@ -323,6 +323,14 @@ a {
   opacity: .3;
 }
 
+fox-template {
+  visibility: hidden;
+}
+
+fox-template.fox-template-renderred {
+  visibility: visible;
+}
+
 .content-padded {
   margin: 10px;
 }

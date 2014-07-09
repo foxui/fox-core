@@ -7034,11 +7034,12 @@ rivets.binders['class'] = function(el, value) {
 
         if (outPage) {
 
-            // clear out page after transtion end
-            // fade is the default tranistion
-            // if (outPage.transition) {
-
-                // only remove the out page in backward direction
+            // only remove the out page in backward direction
+            if (backward && !animation) {
+                clearPage(outPage);
+            }
+            else {
+                // backward and animate
                 if (backward) {
                     function transitionEnd(){
                         outPage.removeEventListener('transitionend', transitionEnd, false);
@@ -7048,10 +7049,7 @@ rivets.binders['class'] = function(el, value) {
                 }
 
                 outPage.hide(animation, backward);
-            // }
-            // else if(backward){
-                // clearPage(outPage);
-            // }
+            }
         }
 
         if (inPage) {
@@ -7233,7 +7231,15 @@ rivets.binders['class'] = function(el, value) {
         return protocol + '//' + host + paths.join('/');
     }
 
+    /**
+     * 默认规则：在使用 ajax 导航的情况下，一个页面应该只有一个 fox-page
+     */
     function parsePage(pagePath, content) {
+        var head;
+        var body;
+        var bodyHTML;
+        var pageHTML;
+        var title;
 
         // existed sources
         var existedScripts = fox.query(document, 'script[src]');
@@ -7287,17 +7293,27 @@ rivets.binders['class'] = function(el, value) {
         //styles in content
         var styles = [];
 
+        var rPage = /(<fox-page[^>]*>)([\s\S.]*)(<\/fox-page>)/i;
+
         if (/<html/i.test(content)) {
             head = document.createElement('div');
             body = document.createElement('div');
+            bodyHTML = content.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0];
             head.innerHTML = content.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0];
-            body.innerHTML = content.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0];
 
         // Page fragment
         } else {
             head = body = document.createElement('div');
-            head.innerHTML = content;
+            bodyHTML = content;
         }
+
+        pageHTML = (bodyHTML.match(rPage)||[])[2];
+
+        // 仅将 fox-page 之外的内容放入临时 div 查找
+        // 因为 fox-page 的渲染成本比较高
+        body.innerHTML = bodyHTML.replace(rPage, function(match, start, html, end) {
+            return start + end;
+        });
 
         scripts = scripts.concat(fox.query(head, 'script'));
         scripts = scripts.concat(fox.query(body, 'script'));
@@ -7338,7 +7354,8 @@ rivets.binders['class'] = function(el, value) {
             scripts: scriptsToLoad,
             styles: stylesToLoad,
             head: head,
-            body: body
+            body: body,
+            page: pageHTML
         }
     }
 
@@ -7402,10 +7419,8 @@ rivets.binders['class'] = function(el, value) {
 
             success: function() {
                 // parse response
-                var head;
-                var body;
-                var title;
                 var page;
+                var pageHTML;
                 var responseText = this.xhr.responseText;
                 var me = this;
 
@@ -7431,10 +7446,11 @@ rivets.binders['class'] = function(el, value) {
                     }
 
                     // replace placeholder
+                    pageHTML = pageData.page;
                     page = pageData.body.querySelector('fox-page');
 
                     if (page && me.placeholder.parentNode) {
-                        me.placeholder.innerHTML = page.innerHTML;
+                        me.placeholder.innerHTML = pageHTML;
 
                         // copy attributes
                         fox.toArray(page.attributes).forEach(function(attr) {
@@ -7550,6 +7566,12 @@ rivets.binders['class'] = function(el, value) {
         var targetDom = ss && !isGlobalData;
         var me = this;
 
+        function setData(data) {
+            var oldVal = this.data;
+            this.data = this[dataFilter] ? this[dataFilter](data) : data;
+            this[callback] && this[callback](this.data, oldVal);
+        }
+
         // clear listener
         if (this._callbackTargetDataTag) {
             document.removeEventListener(
@@ -7563,8 +7585,7 @@ rivets.binders['class'] = function(el, value) {
 
         // 全局数据是立即读取的，因此要求数据存在于组件创建之前
         if (isGlobalData) {
-            var oldVal = this.data;
-            this.data = eval(ss.substring(1));
+            setData.call(this, eval(ss.substring(1)));
         }
         else if(targetDom) {
 
@@ -7578,7 +7599,7 @@ rivets.binders['class'] = function(el, value) {
                     );
 
                     if (targets.indexOf(e.target) > -1) {
-                        this.data = e.detail.newVal;
+                        setData.call(this, e.detail.newVal);
                     }
                 }, this);
             }
@@ -7587,7 +7608,7 @@ rivets.binders['class'] = function(el, value) {
             var dataEl = fox.query(document, ss)[0];
 
             if (dataEl && dataEl.data) {
-                this.data = dataEl.data;
+                setData.call(this, dataEl.data);
             }
 
             // 当数据结点未创建或者后续数据变更时(实际上允许多个数据源，但和初始时不一致)
@@ -7602,7 +7623,7 @@ rivets.binders['class'] = function(el, value) {
             var dataEl = fox.queryChildren(this, (dataTags.concat(dataContainerTags)).join())[0];
 
             if (dataEl && dataEl.data) {
-                this.data = dataEl.data;
+                setData.call(this, dataEl.data);
             }
 
             if (!this._callbackInnerDataTag) {
@@ -7610,7 +7631,7 @@ rivets.binders['class'] = function(el, value) {
                 this._callbackInnerDataTag = fox.bind(function(e){
 
                     if (e.target.parentNode === this) {
-                        this.data = e.detail.newVal;
+                        setData.call(this, e.detail.newVal);
                     }
 
                 }, this);
@@ -7622,6 +7643,11 @@ rivets.binders['class'] = function(el, value) {
     }
 
     // 将 data 注册为setter/getter
+    // 这里的setter/getter 对 fox-template 无效
+    // 因为模板会重新在 fox-template 上注册 sett/getter
+    // 当前的会被覆盖
+    // 因此更换回调调用方式为手动调用
+    /*
     function dataSetterGetter(options){
         options.accessors = options.accessors || {};
 
@@ -7631,12 +7657,12 @@ rivets.binders['class'] = function(el, value) {
             },
             set: function(data){
                 var oldVal = this._data_;
-
                 this._data_ = this[dataFilter] ? this[dataFilter](data) : data;
                 this[callback] && this[callback](this._data_, oldVal);
             }
         };
     }
+    */
 
     fox.fn.datasource = function (options) {
         var originCreated;
@@ -7646,7 +7672,7 @@ rivets.binders['class'] = function(el, value) {
             originCreated = lifecycle.created;
         }
 
-        dataSetterGetter(options);
+        // dataSetterGetter(options);
 
         options.accessors = options.accessors || {};
 

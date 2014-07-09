@@ -60,6 +60,12 @@
         var targetDom = ss && !isGlobalData;
         var me = this;
 
+        function setData(data) {
+            var oldVal = this.data;
+            this.data = this[dataFilter] ? this[dataFilter](data) : data;
+            this[callback] && this[callback](this.data, oldVal);
+        }
+
         // clear listener
         if (this._callbackTargetDataTag) {
             document.removeEventListener(
@@ -73,8 +79,7 @@
 
         // 全局数据是立即读取的，因此要求数据存在于组件创建之前
         if (isGlobalData) {
-            var oldVal = this.data;
-            this.data = eval(ss.substring(1));
+            setData.call(this, eval(ss.substring(1)));
         }
         else if(targetDom) {
 
@@ -88,7 +93,7 @@
                     );
 
                     if (targets.indexOf(e.target) > -1) {
-                        this.data = e.detail.newVal;
+                        setData.call(this, e.detail.newVal);
                     }
                 }, this);
             }
@@ -97,7 +102,7 @@
             var dataEl = fox.query(document, ss)[0];
 
             if (dataEl && dataEl.data) {
-                this.data = dataEl.data;
+                setData.call(this, dataEl.data);
             }
 
             // 当数据结点未创建或者后续数据变更时(实际上允许多个数据源，但和初始时不一致)
@@ -112,7 +117,7 @@
             var dataEl = fox.queryChildren(this, (dataTags.concat(dataContainerTags)).join())[0];
 
             if (dataEl && dataEl.data) {
-                this.data = dataEl.data;
+                setData.call(this, dataEl.data);
             }
 
             if (!this._callbackInnerDataTag) {
@@ -120,7 +125,7 @@
                 this._callbackInnerDataTag = fox.bind(function(e){
 
                     if (e.target.parentNode === this) {
-                        this.data = e.detail.newVal;
+                        setData.call(this, e.detail.newVal);
                     }
 
                 }, this);
@@ -132,6 +137,11 @@
     }
 
     // 将 data 注册为setter/getter
+    // 这里的setter/getter 对 fox-template 无效
+    // 因为模板会重新在 fox-template 上注册 sett/getter
+    // 当前的会被覆盖
+    // 因此更换回调调用方式为手动调用
+    /*
     function dataSetterGetter(options){
         options.accessors = options.accessors || {};
 
@@ -141,12 +151,12 @@
             },
             set: function(data){
                 var oldVal = this._data_;
-
                 this._data_ = this[dataFilter] ? this[dataFilter](data) : data;
                 this[callback] && this[callback](this._data_, oldVal);
             }
         };
     }
+    */
 
     fox.fn.datasource = function (options) {
         var originCreated;
@@ -156,7 +166,7 @@
             originCreated = lifecycle.created;
         }
 
-        dataSetterGetter(options);
+        // dataSetterGetter(options);
 
         options.accessors = options.accessors || {};
 
