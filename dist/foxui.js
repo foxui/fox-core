@@ -7115,6 +7115,9 @@ rivets.binders['class'] = function(el, value) {
     // Nav core code
     //===========================
     var nav = fox.navigator = {
+        // disable navigator
+        disabled: false,
+
         // global config - use animation
         animation: true,
 
@@ -7123,7 +7126,7 @@ rivets.binders['class'] = function(el, value) {
 
         start: function() {
 
-            if (this.started) {
+            if (this.disabled || this.started) {
                 return;
             }
 

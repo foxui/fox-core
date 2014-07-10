@@ -192,6 +192,9 @@
     // Nav core code
     //===========================
     var nav = fox.navigator = {
+        // disable navigator
+        disabled: false,
+
         // global config - use animation
         animation: true,
 
@@ -200,7 +203,7 @@
 
         start: function() {
 
-            if (this.started) {
+            if (this.disabled || this.started) {
                 return;
             }
 
