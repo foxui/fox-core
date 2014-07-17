@@ -7035,7 +7035,7 @@ rivets.binders['class'] = function(el, value) {
         if (outPage) {
 
             // only remove the out page in backward direction
-            if (backward && !animation) {
+            if (backward && (!animation || outPage.transition === 'display')) {
                 clearPage(outPage);
             }
             else {
