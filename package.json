@@ -1,6 +1,6 @@
 {
-  "name": "foxui",
-  "description": "Assemble mobile apps easily with components.",
+  "name": "fox-core",
+  "description": "The core of foxui.",
   "version": "0.1.0",
   "keywords": [
     "css",
@@ -11,7 +11,7 @@
     "prototype",
     "components"
   ],
-  "homepage": "https://github.com/foxui",
+  "homepage": "https://github.com/foxui/fox-core",
   "author": "fex-team",
   "repository": {
     "type": "git",
