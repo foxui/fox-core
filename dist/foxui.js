@@ -6987,11 +6987,11 @@ rivets.binders['class'] = function(el, value) {
         }
     }
 
-    function onPopState() {
+    function onPopState(e) {
 
         // current state already turns to new page
         // stacks still stay in last status
-        var state = history.state;
+        var state = history.state || e.state;
         var outData;
         var inPage;
         var outPage;
@@ -7137,8 +7137,8 @@ rivets.binders['class'] = function(el, value) {
 
             this.started = true;
 
-            window.addEventListener('popstate', function() {
-                onPopState();
+            window.addEventListener('popstate', function(e) {
+                onPopState(e);
             }, false);
 
             delegate.apply(this);
