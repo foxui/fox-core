@@ -54,7 +54,7 @@ module.exports = function(grunt) {
           'src/nav.js',
           'src/datasource.js'
         ],
-        dest: '<%= meta.distPath %><%= pkg.name %>.js'
+        dest: '<%= meta.distPath %>foxui.js'
       }
     },
 
@@ -66,7 +66,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          '<%= meta.distPath %><%= pkg.name %>.css': 'sass/foxui.scss'
+          '<%= meta.distPath %>foxui.css': 'sass/foxui.scss'
         }
       }
     },
@@ -77,7 +77,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          '<%= meta.distPath %><%= pkg.name %>.css': '<%= meta.distPath %>/<%= pkg.name %>.css'
+          '<%= meta.distPath %>foxui.css': '<%= meta.distPath %>/foxui.css'
         }
       }
     },
@@ -96,8 +96,8 @@ module.exports = function(grunt) {
         keepSpecialComments: '*' // set to '*' because we already add the banner in sass
       },
       foxui: {
-        src: '<%= meta.distPath %><%= pkg.name %>.css',
-        dest: '<%= meta.distPath %><%= pkg.name %>.min.css'
+        src: '<%= meta.distPath %>foxui.css',
+        dest: '<%= meta.distPath %>foxui.min.css'
       }
     },
 
@@ -110,7 +110,7 @@ module.exports = function(grunt) {
       },
       foxui: {
         src: '<%= concat.foxui.dest %>',
-        dest: '<%= meta.distPath %><%= pkg.name %>.min.js'
+        dest: '<%= meta.distPath %>foxui.min.js'
       }
     },
 

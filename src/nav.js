@@ -60,11 +60,12 @@
 
     function clearPage(page) {
         if (page) {
-            !page._anchor_ && page.remove();
+            !page._anchor_ && page.parentNode.removeChild(page);
         }
     }
 
     function onPopState() {
+
         // current state already turns to new page
         // stacks still stay in last status
         var state = history.state;
@@ -108,8 +109,9 @@
             state.title && (document.title = state.title);
         }
 
-
         if (outPage) {
+
+            outPage.transition = outPage.transition || nav.defaultTransition;
 
             // only remove the out page in backward direction
             if (backward && (!animation || outPage.transition === 'display')) {
@@ -120,9 +122,11 @@
                 if (backward) {
                     function transitionEnd(){
                         outPage.removeEventListener('transitionend', transitionEnd, false);
+                        outPage.removeEventListener('webkitTransitionEnd', transitionEnd, false);
                         clearPage(outPage);
                     }
                     outPage.addEventListener('transitionend', transitionEnd, false);
+                    outPage.addEventListener('webkitTransitionEnd', transitionEnd, false);
                 }
 
                 outPage.hide(animation, backward);
@@ -130,6 +134,7 @@
         }
 
         if (inPage) {
+            inPage.transition = inPage.transition || nav.defaultTransition;
             inPage.show(animation, backward);
         }
     }
@@ -249,12 +254,18 @@
                 outPage = stacks[stacks.length-1].page;
             }
 
-            outPage && outPage.hide(nav.animation);
+            if (outPage) {
+                outPage.transition = outPage.transition || nav.defaultTransition;
+                outPage.hide(nav.animation);
+            }
 
             // push next state
             stacks.push({href: href, page: inPage});
 
-            inPage && inPage.show(nav.animation);
+            if (inPage) {
+                inPage.transition = inPage.transition || nav.defaultTransition;
+                inPage.show(nav.animation);
+            }
 
             history.pushState({
                     href:href,
