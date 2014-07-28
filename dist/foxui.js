@@ -7135,6 +7135,9 @@ rivets.binders['class'] = function(el, value) {
                 return;
             }
 
+            // clear state on startup
+            history.replaceState();
+
             this.started = true;
 
             window.addEventListener('popstate', function(e) {
